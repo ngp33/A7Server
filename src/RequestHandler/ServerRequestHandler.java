@@ -8,8 +8,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import world.World;
+//I added src repository to the buildpath so we could use world (I think). Hopefully this isn't a problem?
 @WebServlet("/")
 public class ServerRequestHandler extends HttpServlet {
+	
+	World w;
+	HashMap<Integer, String> LevelPassword;
 
 	/**
 	 * 
@@ -17,7 +22,8 @@ public class ServerRequestHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	
-	class URIInfo {
+	class URIInfo { //could this maybe be a separate file? I'm not terribly fond of defining
+		//a class within another class
 		
 		String path;
 		HashMap<String, String> queryParams = new HashMap<String, String>();
@@ -52,7 +58,17 @@ public class ServerRequestHandler extends HttpServlet {
 			throws ServletException, IOException {
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
 		String URIPath = reqStringInfo.path;
-		
+		switch (URIPath) { //TODO I assume that URIPath itself will not be one of these values,
+		//and that we will have to write some method to get this information
+		case "CritterWorld/critters":
+			
+		case "CritterWorld/critter":
+			
+		case "CritterWorld/world":
+			
+		default:
+			
+		}
 		System.out.println("GET sent to " + URIPath);
 	}
 	
@@ -60,7 +76,22 @@ public class ServerRequestHandler extends HttpServlet {
 		throws ServletException, IOException {
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
 		String URIPath = reqStringInfo.path;
-		
+		switch (URIPath) {
+		case "CritterWorld/login":
+			
+		case "CritterWorld/critters":
+			
+		case "CritterWorld/world":
+			
+		case "CritterWorld/world/create_entity":
+			
+		case "CritterWorld/step":
+			
+		case "CritterWorld/run":
+			
+		default:
+			
+		}
 		System.out.println("POST sent to " + URIPath);
 	}
 	
@@ -73,6 +104,9 @@ public class ServerRequestHandler extends HttpServlet {
 		
 		if (! URIPath.substring(0, 22).equals("/CritterWorld/critter/")) {
 			response.setStatus(400);
+		}
+		else {
+			
 		}
 	}
 	
