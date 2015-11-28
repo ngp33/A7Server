@@ -3,10 +3,12 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@WebServlet("/")
 public class ServerRequestHandler extends HttpServlet {
 
 	/**
@@ -50,16 +52,28 @@ public class ServerRequestHandler extends HttpServlet {
 			throws ServletException, IOException {
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
 		String URIPath = reqStringInfo.path;
+		
+		System.out.println("GET sent to " + URIPath);
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
+		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
+		String URIPath = reqStringInfo.path;
 		
+		System.out.println("POST sent to " + URIPath);
 	}
 	
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
+		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
+		String URIPath = reqStringInfo.path;
 		
+		System.out.println("DELETE sent to " + URIPath);
+		
+		if (! URIPath.substring(0, 22).equals("/CritterWorld/critter/")) {
+			response.setStatus(400);
+		}
 	}
 	
 }
