@@ -60,11 +60,11 @@ public class ServerRequestHandler extends HttpServlet {
 		String URIPath = reqStringInfo.path;
 		switch (URIPath) { //TODO I assume that URIPath itself will not be one of these values,
 		//and that we will have to write some method to get this information
-		case "CritterWorld/critters":
+		case "CritterWorld/critters": //list all critters
 			
-		case "CritterWorld/critter":
+		case "CritterWorld/critter": //retrieve a critter
 			
-		case "CritterWorld/world":
+		case "CritterWorld/world": //Get world or subsection of the world
 			
 		default:
 			
