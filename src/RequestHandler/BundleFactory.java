@@ -12,6 +12,10 @@ public class BundleFactory {
 		this.w = w;
 	}
 	
+	/**If a new world is created, the bundleFactory will have to be updated to point to this new
+	 * world. This method accomplishes this task.
+	 * @param w
+	 */
 	public void worldUpdate(World w) {
 		this.w = w;
 	}
@@ -36,11 +40,12 @@ public class BundleFactory {
 	
 	private class critListBundle {
 		//Linkedlist to hold the critters?
+		critBundle [] cb; //this is probably incompatible with the info given in the API
 		public critListBundle() { //TODO get critterlist from world.
 		}
 	}
 	
-	private class critBundle {
+	private class critBundle extends inhabitants {
 		int id;
 		String specieis_id;
 		Program program;
@@ -55,11 +60,39 @@ public class BundleFactory {
 	}
 	
 	private class worldBundle {
+		int current_timestep;
+		int current_version_number;
+		//int update_since not really sure what to do about this.
+		float rate;
+		String name;
+		int population;
+		int rows;
+		int cols;
+		int [] dead_critters;
+		inhabitants [] state;
 		public worldBundle(int rone, int rtwo, int cone, int ctwo, int timeinterval) {
 			//TODO get world dif over this time
 		}
 	}
 	
+	private class rock extends inhabitants {
+		//TODO complete
+	}
 	
+	private class food extends inhabitants {
+		//TODO complete
+	}
+	
+	private class empty extends inhabitants {
+		//TODO complete
+	}
+	
+	
+	/**An interface for the inhabitants*/
+	private abstract class inhabitants {
+		int row;
+		int col;
+		String type;
+	}
 
 }
