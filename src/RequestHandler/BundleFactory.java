@@ -12,13 +12,6 @@ public class BundleFactory {
 		this.w = w;
 	}
 	
-	/**If a new world is created, the bundleFactory will have to be updated to point to this new
-	 * world. This method accomplishes this task.
-	 * @param w
-	 */
-	public void worldUpdate(World w) {
-		this.w = w;
-	}
 	
 	/**Makes a new critListBundle*/
 	public critListBundle getCritListBundle() {

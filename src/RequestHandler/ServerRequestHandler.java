@@ -1,5 +1,6 @@
 package RequestHandler;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 
 import javax.servlet.ServletException;
@@ -15,6 +16,7 @@ public class ServerRequestHandler extends HttpServlet {
 	
 	World w;
 	HashMap<Integer, String> LevelPassword;
+	BundleFactory bf;
 
 	/**
 	 * 
@@ -74,6 +76,7 @@ public class ServerRequestHandler extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
+		PrintWriter pw = response.getWriter();
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
 		String URIPath = reqStringInfo.path;
 		switch (URIPath) {
