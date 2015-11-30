@@ -105,11 +105,11 @@ public class ServerRequestHandler extends HttpServlet {
 		
 		System.out.println("DELETE sent to " + URIPath);
 		
-		if (! URIPath.substring(0, 22).equals("/CritterWorld/critter/")) {
-			response.setStatus(400);
+		if (URIPath.substring(0, 22).equals("/CritterWorld/critter/")) {
+			
 		}
 		else {
-			
+			response.setStatus(400);
 		}
 	}
 	
