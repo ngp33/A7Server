@@ -1,0 +1,15 @@
+/JToken.class
+/Jparse.class
+/Parser.class
+/ParserFactory.class
+/ParserImpl.class
+/Token$EOFToken.class
+/Token$ErrorToken.class
+/Token$NumToken.class
+/Token.class
+/TokenCategory.class
+/TokenType.class
+/Tokenizer$EOFException.class
+/Tokenizer$TokenizerIOException.class
+/Tokenizer.class
+/MutationTest.class
