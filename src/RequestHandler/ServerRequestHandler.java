@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import world.World;
+//import world.World;
 //I added src repository to the buildpath so we could use world (I think). Hopefully this isn't a problem?
 @WebServlet("/")
 public class ServerRequestHandler extends HttpServlet {
 	
-	World w;
+	//World w;
 	HashMap<Integer, String> LevelPassword;
 	BundleFactory bf;
 
@@ -60,6 +60,7 @@ public class ServerRequestHandler extends HttpServlet {
 			throws ServletException, IOException {
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
 		String URIPath = reqStringInfo.path;
+		System.out.println(URIPath);
 		switch (URIPath) { //TODO I assume that URIPath itself will not be one of these values,
 		//and that we will have to write some method to get this information
 		case "CritterWorld/critters": //list all critters
@@ -109,7 +110,7 @@ public class ServerRequestHandler extends HttpServlet {
 			
 		}
 		else {
-			response.setStatus(400);
+			response.setStatus(400); //Assume from now on that all URIs are valid.
 		}
 	}
 	
