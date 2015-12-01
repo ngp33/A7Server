@@ -40,6 +40,14 @@ public class ServerRequestHandler extends HttpServlet {
 	ParserImpl pi = new ParserImpl();
 	/**invariant--is true when the world is running continuously and false otherwise.*/
 	boolean running;
+	
+	/** Version of the world running on the server. Increments when:
+	 * 		- The world steps
+	 * 		- A critter is added
+	 * 		- Many critters are added at once at random locations
+	 * 		- A critter is removed
+	 * 		- A new world is loaded
+	 */
 	int version;
 
 	/**
@@ -267,7 +275,7 @@ public class ServerRequestHandler extends HttpServlet {
 			
 		}
 		else {
-			response.setStatus(400); //Assume from now on that all URIs are valid.
+			response.setStatus(400);
 		}
 	}
 	
