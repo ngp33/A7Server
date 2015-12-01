@@ -81,11 +81,20 @@ public class BundleFactory {
 	}
 	
 	
-	/**An interface for the inhabitants*/
-	private abstract class inhabitants {
+	/**A general class for the inhabitants. It has all the fields
+	 * that any inhabitant would need, so all inhabitants can be
+	 * unpacked using this class*/
+	private class inhabitants {
 		int row;
 		int col;
 		String type;
+		int id;
+		String species_id;
+		int direction;
+		int [] mem;
+		int value;
+		int recently_executed_rule;
+		String program; //should this be a string?
 	}
 
 }

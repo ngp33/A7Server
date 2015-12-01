@@ -61,7 +61,7 @@ public class ServerRequestHandler extends HttpServlet {
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
 		String URIPath = reqStringInfo.path;
 		System.out.println(URIPath);
-		switch (URIPath) { //TODO I assume that URIPath itself will not be one of these values,
+		switch (splice(URIPath,2)) { //TODO I assume that URIPath itself will not be one of these values,
 		//and that we will have to write some method to get this information
 		case "CritterWorld/critters": //list all critters
 			
@@ -80,21 +80,21 @@ public class ServerRequestHandler extends HttpServlet {
 		PrintWriter pw = response.getWriter();
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
 		String URIPath = reqStringInfo.path;
-		switch (URIPath) {
+		switch (splice(URIPath,2)) {
 		case "CritterWorld/login":
 			
 		case "CritterWorld/critters":
 			
 		case "CritterWorld/world":
 			
-		case "CritterWorld/world/create_entity":
-			
 		case "CritterWorld/step":
 			
 		case "CritterWorld/run":
 			
 		default:
-			
+			if (splice(URIPath, 2).equals("CritterWorld/world/create_entity")) {
+				
+			}
 		}
 		System.out.println("POST sent to " + URIPath);
 	}
@@ -114,4 +114,13 @@ public class ServerRequestHandler extends HttpServlet {
 		}
 	}
 	
+	private String splice(String uripath, int numelems) {
+		String [] strs = uripath.split("/");
+		StringBuilder sb = new StringBuilder();
+		int itera = 0;
+		while (itera < numelems && itera < strs.length) {
+			sb.append(strs[itera]);
+		}
+		return sb.toString();
+	}
 }
