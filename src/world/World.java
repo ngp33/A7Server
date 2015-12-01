@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Observable;
 
 import parse.Parser;
@@ -12,9 +13,9 @@ import parse.ParserImpl;
 public class World extends Observable {
 	
 	Hex[][] grid;
-	public ArrayList<Critter> critters; //has to be public to get the critter info
+	public HashMap<Integer, Critter> critters; //has to be public to get the critter info
 	ArrayList<Critter> firstgencrits;
-	ArrayList<Critter> crittersToRemove = new ArrayList<Critter>();
+	ArrayList<Integer> crittersToRemove = new ArrayList<Integer>();
 	
 	String name; // Not sure what this is for yet but it's included in the world file.
 	int time = 0;
@@ -44,7 +45,7 @@ public class World extends Observable {
 	
 	public World() {
 		name = "Untitled";
-		critters = new ArrayList<Critter>();
+		critters = new HashMap<Integer, Critter>();
 		firstgencrits = new ArrayList<Critter>();
 		
 		// This would look cleaner in its own method, but I need to do it inside the constructor.
@@ -80,7 +81,7 @@ public class World extends Observable {
 	
 	public World(int numRows, int numCols, String n) {
 		name = n;
-		critters = new ArrayList<Critter>();
+		critters = new HashMap<Integer, Critter>();
 		firstgencrits = new ArrayList<Critter>();
 		
 		try {
@@ -316,7 +317,7 @@ public class World extends Observable {
 	 * @param c
 	 */
 	public void addCritter(Critter c) {
-		critters.add(c);
+		critters.put(critters.size(), c);
 	}
 	
 	/**Adds a critter mid-time step*/
@@ -325,7 +326,7 @@ public class World extends Observable {
 	}
 	
 	public void advance() {
-		for (Critter c : critters) {
+		for (Critter c : critters.values()) {
 			c.timestep(); // Executes critter's program?
 		}
 		for (Critter c : firstgencrits) {
@@ -334,8 +335,8 @@ public class World extends Observable {
 		}
 		firstgencrits.clear();
 		time++;
-		for (Critter c : crittersToRemove) {
-			critters.remove(c);
+		for (Integer critterId : crittersToRemove) {
+			critters.remove(critterId);
 		}
 		crittersToRemove.clear();
 		setChanged();

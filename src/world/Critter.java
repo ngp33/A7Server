@@ -17,6 +17,8 @@ public class Critter extends Hex {
 	public Random r = new Random(); //this is useful to have for the random sense and I didn't want to keep generating random objects.
 	public Rule mostrecentrule;
 	public Integer mostrecentruleplace;
+	
+	int id;
 		
 	/**Sets up the instance variables for a critter. Data is given in the order
 	 * specified in 4.1 of the a5 spec.

@@ -40,6 +40,7 @@ public class ServerRequestHandler extends HttpServlet {
 	ParserImpl pi = new ParserImpl();
 	/**invariant--is true when the world is running continuously and false otherwise.*/
 	boolean running;
+	int version;
 
 	/**
 	 * 
