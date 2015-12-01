@@ -12,10 +12,11 @@ public class Critter extends Hex {
 	public int direction;
 	public World w;
 	public int [] mem;
-	public String name;
+	public String name; //invariant--all critters with the same name have the same genes.
 	public boolean matingdance;
 	public Random r = new Random(); //this is useful to have for the random sense and I didn't want to keep generating random objects.
 	public Rule mostrecentrule;
+	public Integer mostrecentruleplace;
 		
 	/**Sets up the instance variables for a critter. Data is given in the order
 	 * specified in 4.1 of the a5 spec.

@@ -45,7 +45,16 @@ public class ActionMate {
 					Critter baby = makenewcritter(c, specific);
 					mutate(baby);
 					place(baby,c, specific);
-					baby.name = "childof(" + c.name + ", " + specific.name + ")"; 
+					String gen = baby.genes.toString();
+					if (gen.equals(c.genes.toString())) {
+						baby.name = c.name;
+					}
+					else if (gen.equals(specific.genes.toString())) {
+						baby.name = specific.name;
+					}
+					else {
+						baby.name = "childof(" + c.name + ", " + specific.name + ")"; 
+					 } //supposed to make sure species refers to the critter appropriately
 					c.w.addMidStep(baby);
 				}
 			}
@@ -183,8 +192,8 @@ public class ActionMate {
 			mem[2] = c.mem[2];
 			finishsetup(mem, c);
 			Critter k = new Critter(mem, c.r, p, c.w);
-			k.name = "budof(" + c.name + ")";
 			mutate(k);
+			k.name = k.genes.toString().equals(c.genes.toString()) ? c.name : "budof(" + c.name + ")";
 			if (Crittermethods.checkempty(c, false)) {
 				int [] loc = Crittermethods.dircoords(c, false);
 				c.w.replace(k, c.w.getHex(loc[0], loc[1]));

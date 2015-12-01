@@ -39,16 +39,17 @@ public class BundleFactory {
 	}
 	
 	private class critBundle extends inhabitants {
-		int id;
-		String specieis_id;
-		Program program;
-		int row;
-		int col;
-		int direction;
-		int [] mem;
-		int recently_executed_rule; 
 		public critBundle(int critID) {
 			//TODO form the bundle based on the critter ID.
+			Critter c= w.critters.get(critID);
+			id = critID;
+			row = c.row;
+			col = c.col;
+			species_id = c.name;
+			direction = c.direction;
+			mem = c.mem;
+			String [] str = c.genes.toString().split("\n");
+			recently_executed_rule = c.mostrecentruleplace;
 		}
 	}
 	
@@ -68,23 +69,10 @@ public class BundleFactory {
 		}
 	}
 	
-	private class rock extends inhabitants {
-		//TODO complete
-	}
-	
-	private class food extends inhabitants {
-		//TODO complete
-	}
-	
-	private class empty extends inhabitants {
-		//TODO complete
-	}
-	
-	
 	/**A general class for the inhabitants. It has all the fields
 	 * that any inhabitant would need, so all inhabitants can be
 	 * unpacked using this class*/
-	private class inhabitants {
+	public class inhabitants {
 		int row;
 		int col;
 		String type;
@@ -96,5 +84,35 @@ public class BundleFactory {
 		int recently_executed_rule;
 		String program; //should this be a string?
 	}
+	
+	public class critPlacementBundle {
+		String species_id;
+		String program;
+		int [] mem;
+		placement [] positions;
+		int num;
+		private critPlacementBundle(Critter c) {
+			species_id = c.name;
+			program = c.genes.toString();
+			mem = c.mem;
+		}
+		/**Makes a placementbundle where location of placement is specified for each critter*/
+		public critPlacementBundle(Critter c, placement [] pos) {
+			this(c);
+			positions = pos;
+		}
+		/**Makes a placementbundle where there is a specified number of randomly placed crits*/
+		public critPlacementBundle(Critter c, int number) {
+			this(c);
+			num = number;
+		}
+		
+	}
+	
+	public class placement {
+		int row;
+		int col;
+	}
+	
 
 }

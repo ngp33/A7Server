@@ -1,7 +1,6 @@
 package world;
 
-//TODO make sure this handles energy consumption correctly. Energy should probably be consumed
-//BEFORE the action occurs.
+
 public class Crittermethods {
 	
 	/** Effect: Critter's energy increases by the amount of food in front of him in the following way

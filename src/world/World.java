@@ -12,7 +12,7 @@ import parse.ParserImpl;
 public class World extends Observable {
 	
 	Hex[][] grid;
-	ArrayList<Critter> critters;
+	public ArrayList<Critter> critters; //has to be public to get the critter info
 	ArrayList<Critter> firstgencrits;
 	ArrayList<Critter> crittersToRemove = new ArrayList<Critter>();
 	

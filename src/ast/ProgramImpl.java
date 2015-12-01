@@ -186,6 +186,7 @@ public class ProgramImpl extends Manykids implements Program {
 		for (int place = 0; place < children.length; place ++) {
 			if (((Rule) children[place]).perform(c)){
 				c.mostrecentrule = (Rule) children[place];
+				c.mostrecentruleplace = place;
 				return true;
 			}
 		}
