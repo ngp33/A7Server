@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,20 +42,21 @@ public class ServerRequestHandler extends HttpServlet {
 	ParserImpl pi = new ParserImpl();
 	/**invariant--is true when the world is running continuously and false otherwise.*/
 	boolean running;
+	Timer timer;
 	
-	/** Version of the world running on the server. Increments when:
-	 * 		- The world steps
-	 * 		- A critter is added
-	 * 		- Many critters are added at once at random locations
-	 * 		- A critter is removed
-	 * 		- A new world is loaded
+	/** Version of the world running on the server. Increments when<br>
+	 * 	    - The world steps<br>
+	 * 	    - A critter is added<br>
+	 *      - Many critters are added at once at random locations<br>
+	 * 	    - A critter is removed<br>
+	 * 	    - A new world is loaded<br>
 	 */
 	int version;
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L; //Neil, what is this? TODO
+	private static final long serialVersionUID = 1L; //Neil, what is this? //Something needed for HttpServlet. Auto-generated.
 	
 	
 	class URIInfo { //could this maybe be a separate file? I'm not terribly fond of defining
@@ -168,8 +171,29 @@ public class ServerRequestHandler extends HttpServlet {
 		}
 		
 	}
-	/**Effect: runs the world at the specified rate*/ //TODO Neil, this one's all yours.
+	
+	/**Effect: runs the world at the specified rate*/
 	private void runworld(double rate) {
+		if (rate == 0d) {
+			timer.cancel();
+			return;
+		}
+		
+		long period = (long) (1000d/rate + .5d); //Round
+		
+		timer = new Timer(true);
+		timer.schedule(new TimerStepHandler(), 0l, period);
+	}
+	
+	private class TimerStepHandler extends TimerTask {
+
+		@Override
+		public void run() {
+			synchronized(w) {
+				w.advance();
+				version++;
+			}
+		}
 		
 	}
 

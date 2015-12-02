@@ -1,7 +1,9 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import RequestHandler.HexUpdate;
 import world.Critter;
 
 public class Updateact extends Manykids implements Node, mutation.Replacable {
@@ -107,12 +109,12 @@ public class Updateact extends Manykids implements Node, mutation.Replacable {
 	 * @param c
 	 * @return
 	 */
-	public boolean operate(Critter c){
+	public boolean operate(Critter c, ArrayList<HexUpdate> updateLogEntry){
 		for (int place = 0; place < children.length-1; place++){
 			((Update) children[place]).updatemem(c);
 		}
 		if (hasAction){ //TODO make sure this calls a different commit if the action is attack
-			((Action) children[children.length - 1]).commit(c);
+			((Action) children[children.length - 1]).commit(c, updateLogEntry);
 		}
 		else{ 
 			((Update) children[children.length - 1]).updatemem(c);

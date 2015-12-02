@@ -1,7 +1,9 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import RequestHandler.HexUpdate;
 import world.Critter;
 
 public class Action extends Nokids implements Node, mutation.Removable, mutation.Transformable {
@@ -44,8 +46,8 @@ public class Action extends Nokids implements Node, mutation.Removable, mutation
 		return possibleKids.getRandomNode(Action.class);
 	}
 
-	public void commit(Critter c) {
-		Actionpacked.themove(c,type);
+	public void commit(Critter c, ArrayList<HexUpdate> updateLogEntry) {
+		Actionpacked.themove(c,type, updateLogEntry);
 		//assert that mem[4] went down?
 		assert c.mem[4] <= c.mem[3] * c.w.ENERGY_PER_SIZE;
 		assert c.mem[4] > 0 || (!c.w.getHex(c.row, c.col).equals(c));

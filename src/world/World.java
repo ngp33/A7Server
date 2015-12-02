@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 
+import RequestHandler.HexUpdate;
+import RequestHandler.LogEntry;
 import parse.Parser;
 import parse.ParserImpl;
 
@@ -211,7 +213,7 @@ public class World extends Observable {
 		return rowcol;
 	}
 	
-	public void setHex(int row, int col, Hex h) {
+	public void setHex(int row, int col, Hex h, ArrayList<HexUpdate> updateLogEntry) {
 		if (isInGrid(row, col)) {
 			h.col = col;
 			h.row = row;
@@ -219,6 +221,14 @@ public class World extends Observable {
 			row -= (col + 1)/2; //I changed this too. It was row -= row/2
 			
 			grid[col][row] = h;
+			
+			for (HexUpdate update : updateLogEntry) {
+				if (update.row == row && update.col == col) {
+					update.updatedValue = h;
+					return;
+				}
+			}
+			updateLogEntry.add(new HexUpdate(row, col, h));
 		}
 	}
 	
@@ -270,14 +280,14 @@ public class World extends Observable {
 	 * @param amount
 	 * @param rowcommacol
 	 */
-	public void putFood(int amount, int [] rowcommacol) {
-		replace(new Food(amount), getHex(rowcommacol[0], rowcommacol[1]));
+	public void putFood(int amount, int [] rowcommacol, ArrayList<HexUpdate> updateLogEntry) {
+		replace(new Food(amount), getHex(rowcommacol[0], rowcommacol[1]), updateLogEntry);
 	}
 	
 	/**Effect: Makes a new hex without any food on it. 
 	 * Invariant: There exists a hex at rowcommacol */
-	public void putEmpty(int [] rowcommacol) {
-		replace(new Food(-1), getHex(rowcommacol[0], rowcommacol[1]));
+	public void putEmpty(int [] rowcommacol, ArrayList<HexUpdate> updateLogEntry) {
+		replace(new Food(-1), getHex(rowcommacol[0], rowcommacol[1]), updateLogEntry);
 	}
 	
 	/**Effect: Swaps the position of hexes one and two. It updates their
@@ -286,15 +296,15 @@ public class World extends Observable {
 	 * @param one
 	 * @param two
 	 */
-	public void swap(Hex one, Hex two) {
+	public void swap(Hex one, Hex two, ArrayList<HexUpdate> updateLogEntry) {
 		int temprow = one.row;
 		int tempcol = one.col;
 		one.row = two.row;
 		one.col = two.col;
 		two.row = temprow;
 		two.col = tempcol;
-		setHex(one.row, one.col, one);
-		setHex(two.row, two.col, two);
+		setHex(one.row, one.col, one, updateLogEntry);
+		setHex(two.row, two.col, two, updateLogEntry);
 	}
 	
 	/**Effect: It replaces the hex goner with one. Again, this updates,
@@ -303,10 +313,10 @@ public class World extends Observable {
 	 * @param one
 	 * @param goner
 	 */
-	public void replace(Hex one, Hex goner) {
+	public void replace(Hex one, Hex goner, ArrayList<HexUpdate> updateLogEntry) {
 		one.row = goner.row;
 		one.col = goner.col;
-		setHex(one.row, one.col, one);
+		setHex(one.row, one.col, one, updateLogEntry);
 		// Has the hex already been checked to be of type Food?
 		//Food f = (Food) getHex(rowcommacol[0], rowcommacol[1]);
 		//f.addFood(amount);
@@ -325,28 +335,38 @@ public class World extends Observable {
 		firstgencrits.add(c);
 	}
 	
-	public void advance() {
+	public LogEntry advance() {
+		LogEntry updates = new LogEntry();
+		
 		for (Critter c : critters.values()) {
-			c.timestep(); // Executes critter's program?
+			c.timestep(updates.updates); // Executes critter's program?
 		}
 		for (Critter c : firstgencrits) {
-			c.timestep();
+			c.timestep(updates.updates);
 			addCritter(c);
 		}
 		firstgencrits.clear();
 		time++;
 		for (Integer critterId : crittersToRemove) {
 			critters.remove(critterId);
+			updates.deadCritters.add(critterId);
 		}
 		crittersToRemove.clear();
 		setChanged();
 		notifyObservers();
+		
+		return updates;
 	}
 	
-	public void advanceTime(int amount) {
+	public LogEntry advanceTime(int amount) {
+		LogEntry updates = new LogEntry();
+		
 		for (int i = 0; i < amount; i++) {
-			advance();
+			LogEntry stepUpdates = advance();
+			updates.mergeLaterEntry(stepUpdates);
 		}
+		
+		return updates;
 	}
 	
 	public StringBuilder getInfo() {

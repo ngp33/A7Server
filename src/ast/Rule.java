@@ -1,5 +1,8 @@
 package ast;
 
+import java.util.ArrayList;
+
+import RequestHandler.HexUpdate;
 import world.Critter;
 
 /**
@@ -41,8 +44,8 @@ public class Rule extends Twokids implements Node, mutation.Removable {
 	
 	/**effect: alters critter c according to the rules
 	 * returns: true if an action occured*/
-	public boolean perform(Critter c){
-		return ((Condition) left).getval(c) ? ((Updateact) right).operate(c) : false;
+	public boolean perform(Critter c, ArrayList<HexUpdate> updateLogEntry){
+		return ((Condition) left).getval(c) ? ((Updateact) right).operate(c, updateLogEntry) : false;
 	}
 	
 }

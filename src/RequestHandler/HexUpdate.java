@@ -4,10 +4,10 @@ import world.Hex;
 
 public class HexUpdate {
 
-	int row;
-	int col;
+	public int row;
+	public int col;
 	
-	Hex updatedValue;
+	public Hex updatedValue;
 	
 	public HexUpdate(int r, int c, Hex upVal) {
 		row = r;

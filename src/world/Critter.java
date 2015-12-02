@@ -1,7 +1,9 @@
 package world;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Random;
 
+import RequestHandler.HexUpdate;
 import ast.ProgramImpl;
 import ast.Rule;
 import parse.ParserFactory;
@@ -58,10 +60,11 @@ public class Critter extends Hex {
 	/**Effect: updates the critter's instance variables according to its rules. 
 	 * It pretty much just handles everything that should happen to a critter when
 	 * a time step passes.
+	 * @param updates 
 	 */
-	public void timestep(){
+	public void timestep(ArrayList<HexUpdate> updateLogEntry){
 		matingdance = false;
-		Rulehandler.altercritter(this);
+		Rulehandler.altercritter(this, updateLogEntry);
 	}
 	
 	/**This is the heavyweight getNumRep for critters which returns the detailed 
@@ -83,48 +86,48 @@ public class Critter extends Hex {
 		return 1;
 	}
 	
-	public void consume(){
-		Crittermethods.consume(this);
+	public void consume(ArrayList<HexUpdate> updateLogEntry){
+		Crittermethods.consume(this, updateLogEntry);
 	}
 	
-	public void attack(){
-		Crittermethods.attack(this);
+	public void attack(ArrayList<HexUpdate> updateLogEntry){
+		Crittermethods.attack(this, updateLogEntry);
 	}
 	
-	public void movement(boolean forward){
-		Crittermethods.movement(this,forward);
+	public void movement(boolean forward, ArrayList<HexUpdate> updateLogEntry){
+		Crittermethods.movement(this,forward, updateLogEntry);
 	}
 	
-	public void turn(boolean left) {
-		Crittermethods.turn(this, left);
+	public void turn(boolean left, ArrayList<HexUpdate> updateLogEntry) {
+		Crittermethods.turn(this, left, updateLogEntry);
 	}
 	
 	public void waiting(){
 		Crittermethods.wait(this);
 	}
 	
-	public void dies() {
-		Crittermethods.dies(this);
+	public void dies(ArrayList<HexUpdate> updateLogEntry) {
+		Crittermethods.dies(this, updateLogEntry);
 	}
 	
-	public void grow() {
-		Crittermethods.grow(this);
+	public void grow(ArrayList<HexUpdate> updateLogEntry) {
+		Crittermethods.grow(this, updateLogEntry);
 	}
 	
-	public void mate() {
-		Crittermethods.mate(this);
+	public void mate(ArrayList<HexUpdate> updateLogEntry) {
+		Crittermethods.mate(this, updateLogEntry);
 	}
 	
-	public void bud() {
-		Crittermethods.asexual(this);
+	public void bud(ArrayList<HexUpdate> updateLogEntry) {
+		Crittermethods.asexual(this, updateLogEntry);
 	}
 	
-	public void serve(int amount) {
-		Crittermethods.serve(this, amount);
+	public void serve(int amount, ArrayList<HexUpdate> updateLogEntry) {
+		Crittermethods.serve(this, amount, updateLogEntry);
 	}
 	
-	public void youreit(int num) {
-		Crittermethods.tag(this, num);
+	public void youreit(int num, ArrayList<HexUpdate> updateLogEntry) {
+		Crittermethods.tag(this, num, updateLogEntry);
 	}
 	
 	public int nearby(int num) {

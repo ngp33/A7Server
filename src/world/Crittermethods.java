@@ -1,5 +1,8 @@
 package world;
 
+import java.util.ArrayList;
+
+import RequestHandler.HexUpdate;
 
 public class Crittermethods {
 	
@@ -8,19 +11,19 @@ public class Crittermethods {
 	 * 	2. Critter consumes all the food on the hex when he can.
 	 * @param c
 	 */
-	public static void consume(Critter c) {
+	public static void consume(Critter c, ArrayList<HexUpdate> updateLogEntry) {
 		c.mem[4] -= c.mem[3];
-		if (!death(c)) {
+		if (!death(c, updateLogEntry)) {
 			int n = c.w.getNumRep(dircoords(c,true));
 			if (n < c.w.ROCK_VALUE) {
 				if (c.w.ENERGY_PER_SIZE * c.mem[3] < c.mem [4] + (c.w.ROCK_VALUE-n)) { //too much food on the hex to be fully consumed
-					c.w.putFood((c.w.ROCK_VALUE-n) - (c.w.ENERGY_PER_SIZE * c.mem[3] - c.mem[4]), dircoords(c,true));
+					c.w.putFood((c.w.ROCK_VALUE-n) - (c.w.ENERGY_PER_SIZE * c.mem[3] - c.mem[4]), dircoords(c,true), updateLogEntry);
 					c.mem[4] = c.w.ENERGY_PER_SIZE * c.mem[3];
 				}
 				else{
 					c.mem[4] += (c.w.ROCK_VALUE - n);
 					int [] place = dircoords(c,true);
-					c.w.setHex(place[0], place[1], new Food());//(dircoords(c,true));
+					c.w.setHex(place[0], place[1], new Food(), updateLogEntry);//(dircoords(c,true));
 				}
 			}
 		}
@@ -30,9 +33,9 @@ public class Crittermethods {
 	 * @param attacker
 	 * @param victim
 	 */
-	public static void attack(Critter attacker){
+	public static void attack(Critter attacker, ArrayList<HexUpdate> updateLogEntry){
 		attacker.mem[4] -= attacker.mem[3] * attacker.w.ATTACK_COST;
-		if (!death(attacker)) {
+		if (!death(attacker, updateLogEntry)) {
 			int [] c = dircoords(attacker, true);
 			Hex victim = attacker.w.getHex(c[0], c[1]);
 			if (victim instanceof Critter) {
@@ -42,7 +45,7 @@ public class Crittermethods {
 				int harm = Math.round(damage);
 				v.mem[4] -= harm;
 				if (v.mem[4] <= 0) {
-					dies(v);
+					dies(v, updateLogEntry);
 				}
 			}
 		}
@@ -56,12 +59,12 @@ public class Crittermethods {
 	
 	/** moves the critter
 	 * Invariant: direction is between 0 and 5 inclusive*/
-	public static void movement(Critter c, boolean forward) {
+	public static void movement(Critter c, boolean forward, ArrayList<HexUpdate> updateLogEntry) {
 		c.mem[4] -= c.mem[3] * c.w.MOVE_COST;
-		if (!death(c)) {
+		if (!death(c, updateLogEntry)) {
 			int [] newplace = dircoords(c,forward);
 			if (checkempty(c, forward)) {
-				c.w.swap(c, c.w.getHex(newplace[0], newplace[1]));
+				c.w.swap(c, c.w.getHex(newplace[0], newplace[1]), updateLogEntry);
 			}
 		}
 	}
@@ -93,12 +96,12 @@ public class Crittermethods {
 	
 	/**Turns the critter left or right.
 	 * I don't think any additional check is required.*/
-	public static void turn(Critter c, boolean left) {
+	public static void turn(Critter c, boolean left, ArrayList<HexUpdate> updateLogEntry) {
 		c.direction += 6;
 		c.direction = left ? c.direction - 1 : c.direction + 1;
 		c.direction = c.direction % 6;
 		c.mem[4] -= c.mem[3];
-		death(c);
+		death(c, updateLogEntry);
 	}
 	
 	/**returns the integer result of the complexity formula
@@ -147,15 +150,15 @@ public class Crittermethods {
 	 * critter was when it died.
 	 * @param c
 	 */
-	public static void dies(Critter c){
-		c.w.replace(new Food(c.w.FOOD_PER_SIZE * c.mem[3]), c);
+	public static void dies(Critter c, ArrayList<HexUpdate> updateLogEntry){
+		c.w.replace(new Food(c.w.FOOD_PER_SIZE * c.mem[3]), c, updateLogEntry);
 		c.w.crittersToRemove.add(c.id);
 	}
 	
 	/** Critter grows one unit bigger. Critter can't get bigger than size 99*/
-	public static void grow(Critter c) {
+	public static void grow(Critter c, ArrayList<HexUpdate> updateLogEntry) {
 		c.mem[4] -= c.mem[3] * complexitycalc(c) * c.w.GROW_COST;
-		if (!death(c)) {
+		if (!death(c, updateLogEntry)) {
 			if (c.mem[3] < 99) {
 				c.mem[3] ++;
 			}
@@ -165,18 +168,18 @@ public class Crittermethods {
 	
 	/** A critters attempt to mate 
 	 * unsuccessful mating*/
-	public static void mate(Critter c) {
-		ActionMate.matewith(c);
+	public static void mate(Critter c, ArrayList<HexUpdate> updateLogEntry) {
+		ActionMate.matewith(c, updateLogEntry);
 	}
 	
-	public static void asexual(Critter c) {
-		ActionMate.alone(c);
+	public static void asexual(Critter c, ArrayList<HexUpdate> updateLogEntry) {
+		ActionMate.alone(c, updateLogEntry);
 	}
 
 	/**handles serve. Note, Critter energy may go below 0 in this action */
-	public static void serve(Critter c, int quantity) {
+	public static void serve(Critter c, int quantity, ArrayList<HexUpdate> updateLogEntry) {
 		c.mem[4] -= c.mem[3];
-		if (!death(c)) { //I was tempted not to include this line, but I think a critter might be able to spawn a rock
+		if (!death(c, updateLogEntry)) { //I was tempted not to include this line, but I think a critter might be able to spawn a rock
 			if (checkfood(c, true)) { //without it
 				int amount = c.mem[4] >= quantity ? quantity : c.mem[4];
 				Food f = (Food) c.w.getHex(dircoords(c,true)[0], dircoords(c,true)[1]);
@@ -184,16 +187,16 @@ public class Crittermethods {
 				//c.w.putFood(amount, dircoords(c,true));
 			}
 			c.mem[4] -= quantity;
-			death(c);
+			death(c, updateLogEntry);
 		}
 
 	}
 
 	/**Effect: tags a critter directly ahead*/
-	public static void tag(Critter c, int num) {
+	public static void tag(Critter c, int num, ArrayList<HexUpdate> updateLogEntry) {
 		int [] place = dircoords(c, true);
 		c.mem[4] -= c.mem[3];
-		if (!death(c)) {
+		if (!death(c, updateLogEntry)) {
 			if (c.w.getNumRep(place) > 0 && num >= 0 && num <= 99) {
 				Critter other = (Critter) c.w.getHex(place[0], place[1]);
 				other.mem[6] = num;
@@ -206,9 +209,9 @@ public class Crittermethods {
 	 * @param c
 	 * @return
 	 */
-	public static boolean death(Critter c) { 
+	public static boolean death(Critter c, ArrayList<HexUpdate> updateLogEntry) { 
 		if (c.mem[4] <= 0) {
-			c.dies();
+			c.dies(updateLogEntry);
 			return true;
 		}
 		return false;

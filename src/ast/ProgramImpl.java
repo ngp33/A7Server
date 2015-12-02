@@ -1,7 +1,9 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import RequestHandler.HexUpdate;
 import world.Critter;
 import mutation.Mutation;
 import mutation.MutationFactory;
@@ -182,9 +184,9 @@ public class ProgramImpl extends Manykids implements Program {
 	 * @param c
 	 * @return
 	 */
-	public boolean eval(Critter c){
+	public boolean eval(Critter c, ArrayList<HexUpdate> updateLogEntry){
 		for (int place = 0; place < children.length; place ++) {
-			if (((Rule) children[place]).perform(c)){
+			if (((Rule) children[place]).perform(c, updateLogEntry)){
 				c.mostrecentrule = (Rule) children[place];
 				c.mostrecentruleplace = place;
 				return true;

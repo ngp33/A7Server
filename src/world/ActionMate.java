@@ -1,7 +1,9 @@
 package world;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import RequestHandler.HexUpdate;
 import ast.ProgramImpl;
 import ast.Rule;
 import world.Critter;
@@ -16,14 +18,14 @@ public class ActionMate {
 	 * Effect: the energy of the critters involved decrease by the proper amount depending on whether or not
 	 * 		the mating was successful. An unsuccessful mating constitutes any mating where a child is not formed.
 	 * 		Thus, if a critter has enough energy to attempt a mate, but not to perform it, the critter doesn't die*/
-	public static void matewith(Critter c) {
+	public static void matewith(Critter c, ArrayList<HexUpdate> updateLogEntry) {
 		c.mem[4] -= c.mem[3];//put an if not death line here
-		if (!Crittermethods.death(c)) {
+		if (!Crittermethods.death(c, updateLogEntry)) {
 			c.matingdance = true;
 			Hex there = c.w.getHex(Crittermethods.dircoords(c,true)[0], Crittermethods.dircoords(c,true)[1]);
 			if (there instanceof Critter) {
 				Critter specific = (Critter) there;
-				success(c,specific);
+				success(c,specific, updateLogEntry);
 			}
 		}
 	}
@@ -34,7 +36,7 @@ public class ActionMate {
 	 * @param c
 	 * @param specific
 	 */
-	private static void success(Critter c, Critter specific) {
+	private static void success(Critter c, Critter specific, ArrayList<HexUpdate> updateLogEntry) {
 		if (specific.matingdance) {
 			if (Crittermethods.checkempty(c, false) || Crittermethods.checkempty(specific, false)) {
 				int one = c.mem[4] + c.mem[3] - c.w.MATE_COST * Crittermethods.complexitycalc(c);
@@ -44,7 +46,7 @@ public class ActionMate {
 					specific.mem[4] = two;
 					Critter baby = makenewcritter(c, specific);
 					mutate(baby);
-					place(baby,c, specific);
+					place(baby,c, specific, updateLogEntry);
 					String gen = baby.genes.toString();
 					if (gen.equals(c.genes.toString())) {
 						baby.name = c.name;
@@ -66,15 +68,15 @@ public class ActionMate {
 	 * Returns: true if the baby is successfully placed.
 	 * Invariant: There exists an empty place behind one of the two parents to put the new critter
 	 */
-	private static void place(Critter baby, Critter c, Critter k) {
+	private static void place(Critter baby, Critter c, Critter k, ArrayList<HexUpdate> updateLogEntry) {
 		Critter firstpar = c;
 		Critter secondpar = k;
 		if (c.r.nextBoolean()) {
 			firstpar = k;
 			secondpar = c;
 		}
-		if (babysit(baby, firstpar)) {}
-		else {babysit(baby,secondpar);}
+		if (babysit(baby, firstpar, updateLogEntry)) {}
+		else {babysit(baby,secondpar, updateLogEntry);}
 	}
 	
 	/**Effect: places a baby if the space behind parent is empty. Does nothing otherwise
@@ -83,10 +85,10 @@ public class ActionMate {
 	 * @param parent
 	 * @return
 	 */
-	private static boolean babysit(Critter baby, Critter parent) {
+	private static boolean babysit(Critter baby, Critter parent, ArrayList<HexUpdate> updateLogEntry) {
 		if (Crittermethods.checkempty(parent, false)) {
 			int [] p = Crittermethods.dircoords(parent, false);
-			baby.w.replace(baby, baby.w.getHex(p[0], p[1]));
+			baby.w.replace(baby, baby.w.getHex(p[0], p[1]), updateLogEntry);
 			return true;
 		}
 		return false;
@@ -182,9 +184,9 @@ public class ActionMate {
 	
 	
 	/** creates and places a new critter in the world according to laws of budding*/
-	public static void alone(Critter c) {
+	public static void alone(Critter c, ArrayList<HexUpdate> updateLogEntry) {
 		c.mem[4] -= c.w.BUD_COST * Crittermethods.complexitycalc(c);
-		if (!Crittermethods.death(c)) {
+		if (!Crittermethods.death(c, updateLogEntry)) {
 			ProgramImpl p = (ProgramImpl) c.genes.copy();
 			int [] mem = new int [c.mem[0]];
 			mem[0] = c.mem[0];
@@ -196,7 +198,7 @@ public class ActionMate {
 			k.name = k.genes.toString().equals(c.genes.toString()) ? c.name : "budof(" + c.name + ")";
 			if (Crittermethods.checkempty(c, false)) {
 				int [] loc = Crittermethods.dircoords(c, false);
-				c.w.replace(k, c.w.getHex(loc[0], loc[1]));
+				c.w.replace(k, c.w.getHex(loc[0], loc[1]), updateLogEntry);
 				c.w.addMidStep(k);
 			}
 		}

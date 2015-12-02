@@ -5,6 +5,9 @@ import world.Critter;
 import world.Hex;
 
 import java.math.*;
+import java.util.ArrayList;
+
+import RequestHandler.HexUpdate;
 
 public class Actionpacked {
 	
@@ -13,34 +16,34 @@ public class Actionpacked {
 	 * @param c
 	 * @param type
 	 */
-	public static void themove(Critter c, Hamlet type){
+	public static void themove(Critter c, Hamlet type, ArrayList<HexUpdate> updateLogEntry){
 		switch(type){
 		case attack:
-			c.attack();
+			c.attack(updateLogEntry);
 			break;
 		case backward:
-			c.movement(false);
+			c.movement(false, updateLogEntry);
 			break;
 		case bud:
-			c.bud();
+			c.bud(updateLogEntry);
 			break;
 		case eat:
-			c.consume();
+			c.consume(updateLogEntry);
 			break;
 		case forward:
-			c.movement(true);
+			c.movement(true, updateLogEntry);
 			break;
 		case grow:
-			c.grow();
+			c.grow(updateLogEntry);
 			break;
 		case left:
-			c.turn(true);
+			c.turn(true, updateLogEntry);
 			break;
 		case mate: 
-			c.mate();
+			c.mate(updateLogEntry);
 			break;
 		case right:
-			c.turn(false);
+			c.turn(false, updateLogEntry);
 			break;
 		case wait:
 			c.waiting();

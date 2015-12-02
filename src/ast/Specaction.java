@@ -1,7 +1,9 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import RequestHandler.HexUpdate;
 import world.Critter;
 
 public class Specaction extends Action {
@@ -46,12 +48,12 @@ public class Specaction extends Action {
 		eval = (Expr) replacement;
 	}
 	
-	public void commit(Critter c){
+	public void commit(Critter c, ArrayList<HexUpdate> updateLogEntry){
 		if (type.equals(Hamlet.serve)) {
-			c.serve(eval.value(c));
+			c.serve(eval.value(c), updateLogEntry);
 		}
 		else if (type.equals(Hamlet.tag)) {
-			c.youreit(eval.value(c));
+			c.youreit(eval.value(c), updateLogEntry);
 		}
 	}
 	
