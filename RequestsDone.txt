@@ -1,0 +1,23 @@
+//GET//
+
+List all Critters
+Retrieve a Critter
+Get the state of the world
+Get a subsection of the world
+
+//POST//
+
+Log in to the server
+Create a Critter
+Make a new world on the server
+Create a food or rock object
+Advance the world by steps
+Run the world continuously/change the rate
+
+//DELETE//
+
+Remove a Critter *
+
+
+* Done
+** Tested

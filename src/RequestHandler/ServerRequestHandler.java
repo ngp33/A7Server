@@ -333,6 +333,7 @@ public class ServerRequestHandler extends HttpServlet {
 			if (permLevel == "admin" || selected.godId == sessionId) {
 				LogEntry logEntry = new LogEntry();
 				w.setHex(selected.row, selected.col, new Food(0), logEntry.updates);
+				w.critters.remove(critterId);
 				
 				logEntry.deadCritters.add(critterId);
 				
