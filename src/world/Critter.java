@@ -18,7 +18,7 @@ public class Critter extends Hex {
 	public Rule mostrecentrule;
 	public Integer mostrecentruleplace;
 	
-	int id;
+	public int id;
 		
 	/**Sets up the instance variables for a critter. Data is given in the order
 	 * specified in 4.1 of the a5 spec.

@@ -1,5 +1,7 @@
 package RequestHandler;
 
+import java.util.Collection;
+
 import ast.Program;
 import world.Critter;
 import world.World;
@@ -32,9 +34,15 @@ public class BundleFactory {
 	}
 	
 	private class critListBundle {
-		//Linkedlist to hold the critters?
-		critBundle [] cb; //this is probably incompatible with the info given in the API
-		public critListBundle() { //TODO get critterlist from world.
+		//Linkedlist to hold the critters? //Nah it should be good
+		critBundle [] cb; //this is probably incompatible with the info given in the API //Nah it should be good
+		public critListBundle() {
+			Collection<Critter> critterList = w.critters.values();
+			cb = new critBundle[critterList.size()];
+			int i = 0;
+			for (Critter c : critterList) {
+				cb[i] = new critBundle(c.id);
+			}
 		}
 	}
 	
