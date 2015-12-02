@@ -21,6 +21,9 @@ public class Critter extends Hex {
 	public Integer mostrecentruleplace;
 	
 	public int id;
+	
+	/**ID of the session that created the critter*/
+	public int godId;
 		
 	/**Sets up the instance variables for a critter. Data is given in the order
 	 * specified in 4.1 of the a5 spec.

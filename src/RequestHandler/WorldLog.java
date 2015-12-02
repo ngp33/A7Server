@@ -17,6 +17,7 @@ public class WorldLog {
 		return false;
 	}
 	
+	//This could probably be simplified using the merge method but I don't want to change anything around yet.
 	/**Returns a list of updates between the latest version in the log and oldVersion.*/
 	public LogEntry getDiff(int oldVersion) {
 		ArrayList<HexUpdate> diff = new ArrayList<HexUpdate>();

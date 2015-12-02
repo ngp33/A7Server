@@ -23,6 +23,7 @@ import ast.ProgramImpl;
 import console.Console;
 import parse.ParserImpl;
 import world.Critter;
+import world.Food;
 import world.World;
 
 //import world.World;
@@ -52,6 +53,7 @@ public class ServerRequestHandler extends HttpServlet {
 	 * 	    - A new world is loaded<br>
 	 */
 	int version;
+	WorldLog log;
 
 	/**
 	 * 
@@ -190,8 +192,10 @@ public class ServerRequestHandler extends HttpServlet {
 		@Override
 		public void run() {
 			synchronized(w) {
-				w.advance();
+				LogEntry logEntry = w.advance();
 				version++;
+				logEntry.version = version;
+				log.log.addFirst(logEntry);
 			}
 		}
 		
@@ -202,7 +206,12 @@ public class ServerRequestHandler extends HttpServlet {
 		if (writeOrAdmin(sessionID)) {
 			if (!running) {
 				int counter = numSteps.getStepnum();
-				w.advanceTime(counter);
+				
+				LogEntry logEntry = w.advanceTime(counter);
+				version++;
+				logEntry.version = version;
+				log.log.addFirst(logEntry);
+				
 				response.setStatus(200);
 				try {
 					response.getWriter().append("Ok");
@@ -296,7 +305,45 @@ public class ServerRequestHandler extends HttpServlet {
 		System.out.println("DELETE sent to " + URIPath);
 		
 		if (URIPath.substring(0, 22).equals("/CritterWorld/critter/")) {
+			String critterIdStr = URIPath.substring(22);
+			int critterId = 0;
+			try {
+				critterId = Integer.parseInt(critterIdStr);
+			} catch (NumberFormatException e) {
+				response.setStatus(400);
+				return;
+			}
 			
+			String sessionIdStr = reqStringInfo.queryParams.get("session_id");
+			if (sessionIdStr == null) {
+				response.setStatus(400);
+				return;
+			}
+			int sessionId = 0;
+			try {
+				sessionId = Integer.parseInt(sessionIdStr);
+			} catch (NumberFormatException e) {
+				response.setStatus(400);
+				return;
+			}
+			
+			Critter selected = w.getCritterById(critterId);
+			String permLevel = sessIDAccessLevel.get(sessionId);
+			
+			if (permLevel == "admin" || selected.godId == sessionId) {
+				LogEntry logEntry = new LogEntry();
+				w.setHex(selected.row, selected.col, new Food(0), logEntry.updates);
+				
+				logEntry.deadCritters.add(critterId);
+				
+				version++;
+				logEntry.version = version;
+				log.log.addFirst(logEntry);
+				
+				response.setStatus(204);
+			} else {
+				response.setStatus(401);
+			}
 		}
 		else {
 			response.setStatus(400);

@@ -403,5 +403,9 @@ public class World extends Observable {
 			even = !even;
 		}
 	}
+	
+	public Critter getCritterById(int id) {
+		return critters.get(id);
+	}
 
 }
