@@ -5,7 +5,7 @@ public abstract class Hex {
 	public int row;
 	public int col;
 	
-	abstract int getNumRep();
+	public abstract int getNumRep();
 	
 
 	/**A method for getting the printable information for a hex in accordance

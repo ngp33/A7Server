@@ -19,7 +19,7 @@ public class World extends Observable {
 	ArrayList<Critter> firstgencrits;
 	ArrayList<Integer> crittersToRemove = new ArrayList<Integer>();
 	
-	String name; 
+	public String name; 
 	int time = 0;
 	int rows;
 	int columns;

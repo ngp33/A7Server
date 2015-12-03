@@ -43,6 +43,8 @@ public class PostRequests {
 	ParserImpl pi = new ParserImpl();
 	World w;
 	WorldLog log;
+	/**invariant: This will always have the rate at which the world is running*/
+	double rate;
 	
 	/**Effect: If the user successfully provides proper login information, this
 	 * assigns them a sessionID and ensures that they will receive all the rights
@@ -129,6 +131,7 @@ public class PostRequests {
 						Critter k = c.copy();
 						k.row = p.row;
 						k.col = p.col;
+						k.direction = 0;
 						w.addCritter(k);
 						w.replace(k, w.getHex(k.row, k.col));
 					} else {
@@ -174,6 +177,7 @@ public class PostRequests {
 	
 	/**Effect: runs the world at the specified rate*/
 	private void runworld(double rate) {
+		this.rate = rate;
 		if (rate == 0d) {
 			timer.cancel();
 			return;
@@ -239,6 +243,10 @@ public class PostRequests {
 	/**Returns true if the sessionID corresponds to write/admin access*/
 	private boolean writeOrAdmin(int SessionID) {
 		return !sessIDAccessLevel.get(SessionID).equals("read");
+	}
+	
+	public String accessLevel(int SessionID) {
+		return sessIDAccessLevel.get(SessionID);
 	}
 
 }

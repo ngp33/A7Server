@@ -15,8 +15,12 @@ public class Food extends Hex { //Rock value is assumed to be -1 here.
 
 
 	@Override
-	int getNumRep() {
+	public int getNumRep() {
 		return quantity == 0 ? 0 : -quantity-1;
+	}
+	
+	public int getAmount() {
+		return quantity;
 	}
 	
 	void addFood(int qty) {

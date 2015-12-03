@@ -104,7 +104,7 @@ public class ServerRequestHandler extends HttpServlet {
 		int sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
 		switch (splice(URIPath,2)) {
 		case "CritterWorld/critters": //list all critters
-			
+			gr.handleGetCritterList(sessionID, pr.accessLevel(sessionID), w, response);
 			break;
 		case "CritterWorld/critter": //retrieve a critter
 			break;
@@ -371,7 +371,7 @@ public class ServerRequestHandler extends HttpServlet {
 			}
 			
 			Critter selected = w.getCritterById(critterId);
-			String permLevel = sessIDAccessLevel.get(sessionId); //Can we move this to PostRequests?
+			String permLevel = pr.accessLevel(sessionId); //Can we move this to PostRequests?
 			
 			if (permLevel == "admin" || selected.godId == sessionId) {
 				LogEntry logEntry = new LogEntry();

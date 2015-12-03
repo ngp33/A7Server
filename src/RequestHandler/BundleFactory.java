@@ -1,9 +1,12 @@
 package RequestHandler;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import ast.Program;
 import world.Critter;
+import world.Food;
+import world.Hex;
 import world.World;
 
 /**Creates a bundle factory which bundles information into specific classes*/
@@ -24,15 +27,18 @@ public class BundleFactory {
 	}
 	
 	//Used in getting the critterList I assume
-	private class CritListBundle {
-		CritBundle [] cb;
-		public CritListBundle() {
+	public static class CritListBundle {
+		Inhabitant [] cb;
+		int place;
+		public CritListBundle(World w) {
 			Collection<Critter> critterList = w.critters.values();
-			cb = new CritBundle[critterList.size()];
-			int i = 0;
-			for (Critter c : critterList) {
-				cb[i] = new CritBundle(c.id);
-			}
+			cb = new Inhabitant[critterList.size()];
+			place = 0;
+		}
+		/**Effect: Adds an inhabitant to the critterlist*/
+		public void addInhabitant(Inhabitant i) {
+			cb[place] = i;
+			place ++;
 		}
 	}
 	
@@ -54,26 +60,54 @@ public class BundleFactory {
 	}*/
 	
 	/**Will be used in getting the world I assume...*/
-	private class worldBundle {
+	public class worldBundle {
 		int current_timestep;
 		int current_version_number;
 		//int update_since not really sure what to do about this.
-		float rate;
+		double rate;
 		String name;
 		int population;
 		int rows;
 		int cols;
 		int [] dead_critters;
 		Inhabitant [] state;
-		public worldBundle(int rone, int rtwo, int cone, int ctwo, int timeinterval) {
-			//TODO get world dif over this time
+		public worldBundle(int rone, int rtwo, int cone, int ctwo, int oldVersion, PostRequests pr, int sesid, String al) {
+
+		}
+		public worldBundle(int rone, int rtwo, int cone, int ctwo, PostRequests pr, int sesid, String al) {
+			this(rone, rtwo, cone, ctwo, 0, pr, sesid, al);
+		}
+		public worldBundle(int oldVersion, PostRequests pr, int sesid, String al) {
+			
+		}
+		public worldBundle(PostRequests pr, int sesid, String al) {
+			this(0, pr, sesid, al);
+		}
+		
+		private void fillInBundle(LogEntry le, PostRequests pr, int sessionID, String accesslevel) {
+			current_timestep = w.getTime();
+			current_version_number = le.version;
+			rate = pr.rate;
+			name = w.name;
+			population = w.critters.size();
+			rows = w.ROWS;
+			cols = w.COLUMNS;
+			int place = 0;
+			Iterator <Integer> i = le.deadCritters.iterator();
+			while (i.hasNext()) {
+				dead_critters[place] = i.next();
+			}
+			Iterator <HexUpdate> hexups = le.updates.iterator();
+			while(hexups.hasNext()) {
+				Inhabitant.getInhabitant(hexups.next().updatedValue, pr.w, accesslevel, sessionID);
+			}
 		}
 	}
 	
 	/**A general class for the inhabitants. It has all the fields
 	 * that any inhabitant would need, so all inhabitants can be
 	 * unpacked using this class. Used so far in create_entity among other things*/
-	public class Inhabitant {
+	public static class Inhabitant {
 		int row;
 		int col;
 		String type;
@@ -85,16 +119,47 @@ public class BundleFactory {
 		int recently_executed_rule;
 		String program; //should this be a string?
 		int amount;
-		private Inhabitant (Critter c) {
+		/**makes a critter bundle with the critter's: <br>
+		 * id, row, col, direction, species_id, mem, program, recently_executed_rule
+		 * @param c
+		 */
+		public Inhabitant() {}
+		public Inhabitant (Critter c) {
 			id = c.id;
 			row = c.row;
 			col = c.col;
 			species_id = c.name;
 			direction = c.direction;
 			mem = c.mem;
-			String [] str = c.genes.toString().split("\n");
+			program = c.genes.toString();
 			recently_executed_rule = c.mostrecentruleplace;
-			
+		}
+		
+		public static Inhabitant getInhabitant(Hex hex, World w, String access, int sessionID) {
+			Inhabitant i;
+			if (hex.getNumRep() > 0) {
+				Critter c = (Critter) hex;
+				if (access.equals("admin") || sessionID == c.godId) {
+					i = GetRequests.getFullCritterBundle(c);
+				} else {
+					i = GetRequests.getWeakCritterBundle(c);
+				}
+				i.type = "critter";
+			} else {
+				i = new Inhabitant();
+				i.row = hex.row;
+				i.col = hex.col;
+				if (hex.getNumRep() == 0) {
+					i.type = "nothing";
+				} else if (hex.getNumRep() == w.ROCK_VALUE) {
+					i.type = "rock";
+				}
+				else {
+					i.type = "food";
+					i.amount = ((Food) hex).getAmount();
+				}
+			}
+			return i;
 		}
 	}
 	

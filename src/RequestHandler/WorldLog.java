@@ -37,8 +37,16 @@ public class WorldLog {
 			}
 		}
 		
-		return new LogEntry(diff, deadCritters);
+		return new LogEntry(diff, deadCritters); //TODO make it so the new logEntry has the correct version num.
 	}
+	
+	//TODO I'm going to go abstraction boundary on this one and request that you implement this method
+	//It should be the same as getDiff, but written so that it doesn't return changes to hexes outside
+	//of the bounds rowone-rowtwo; cone- ctwo.
+	public LogEntry getDiffBounded(int oldVersion, int rone, int rtwo, int cone, int ctwo) {
+		return null;
+	}
+	
 	
 	/*public void mergeToPreviousVersion(int endVersion) {
 		ArrayList<HexUpdate> updates = getDiff(endVersion);
