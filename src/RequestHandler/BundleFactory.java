@@ -25,13 +25,13 @@ public class BundleFactory {
 	
 	//Used in getting the critterList I assume
 	private class CritListBundle {
-		CritBundle [] cb;
+		Inhabitant [] cb;
 		public CritListBundle() {
 			Collection<Critter> critterList = w.critters.values();
-			cb = new CritBundle[critterList.size()];
+			cb = new Inhabitant[critterList.size()];
 			int i = 0;
 			for (Critter c : critterList) {
-				cb[i] = new CritBundle(c.id);
+				cb[i] = new Inhabitant(c);
 			}
 		}
 	}
