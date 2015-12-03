@@ -12,7 +12,7 @@ Create a Critter					Should be done--Rafe	*
 Make a new world on the server 
 Create a food or rock object		Should be done--Rafe	*
 Advance the world by steps			Should be done--Rafe	*
-Run the world continuously/change the rate
+Run the world continuously/change the rate *
 
 //DELETE//
 
