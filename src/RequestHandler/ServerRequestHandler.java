@@ -35,14 +35,16 @@ public class ServerRequestHandler extends HttpServlet {
 	//HashMap<String, String> LevelPassword; //A mapping of levels to passwords
 	//HashMap<Integer, String> sessIDAccessLevel; //A mapping of sessionIDs to AccessLevels so that
 	//the mapping is easily changed and the code is more readable.
-	Gson gson = new Gson(); //I sort of don't like giving values to the instance variables here...
+	Gson gson;//I sort of don't like giving values to the instance variables here...
 	//Random rando = new Random(); //Initialize at some point TODO
-	ParserImpl pi = new ParserImpl();
+	ParserImpl pi;
 	/**invariant--is true when the world is running continuously and false otherwise.*/
 	//boolean running;
 	GetRequests gr;
 	//Timer timer;
 	PostRequests pr;
+	
+	HashMap<Integer, String> sessIDAccessLevel; //Needed for the DELETE request
 	
 	/** Version of the world running on the server. Increments when:<br>
 	 * 	    - The world steps<br>
@@ -95,6 +97,13 @@ public class ServerRequestHandler extends HttpServlet {
 
 	}
 
+	
+	public void init() throws ServletException {
+		gson = new Gson();
+		pi = new ParserImpl();
+		
+		sessIDAccessLevel = new HashMap<Integer, String>();
+	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

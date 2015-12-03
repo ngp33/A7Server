@@ -95,12 +95,19 @@ public class PostRequests {
 		response.addHeader("Content-Type", "text/plain");
 		if (writeOrAdmin(sessionID)) {
 			if (w.getNumRep(new int[] { obj.row, obj.col }) == 0) { //checks that the hex is empty
+				LogEntry logEntry = new LogEntry();
+				
 				if (obj.type.equals("rock")) {
-					w.replace(new Rock(), w.getHex(obj.row, obj.col));
+					w.replace(new Rock(), w.getHex(obj.row, obj.col), logEntry.updates);
 				}
 				else {
-					w.replace(new Food(obj.amount), w.getHex(obj.row, obj.col));
+					w.replace(new Food(obj.amount), w.getHex(obj.row, obj.col), logEntry.updates);
 				}
+				
+				version++;
+				logEntry.version = version;
+				log.log.add(logEntry);
+				
 				response.setStatus(201);
 				response.getWriter().append("Ok");
 			} else {
@@ -119,9 +126,12 @@ public class PostRequests {
 	 * Effect: updates the servletresponse*/
 	public void handleLoadNewCritters(CritPlacementBundle cpb, int sessionID, HttpServletResponse r) {
 		if (writeOrAdmin(sessionID)) {
+			LogEntry logEntry = new LogEntry();
+			
 			Critter c = new Critter(cpb.mem, rando, (ProgramImpl) pi.parse(new StringReader(cpb.program)), w);
 			c.name = cpb.species_id == null ? c.genes.toString() : cpb.species_id; 
 			//The above line ensures that all critters have a species.
+			c.godId = sessionID;
 			if (cpb.positions == null) {
 				Console.randomPlacement(w, c, cpb.num, c.r);
 
@@ -133,12 +143,17 @@ public class PostRequests {
 						k.col = p.col;
 						k.direction = 0;
 						w.addCritter(k);
-						w.replace(k, w.getHex(k.row, k.col));
+						w.replace(k, w.getHex(k.row, k.col), logEntry.updates);
 					} else {
 						// TODO notify user of failure somehow
 					}
 				}
 			}
+			
+			version++;
+			logEntry.version = version;
+			log.log.addFirst(logEntry);
+			
 			r.setStatus(201);
 		}
 		

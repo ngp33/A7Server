@@ -27,6 +27,7 @@ public class BundleFactory {
 	}
 	
 	//Used in getting the critterList I assume
+//<<<<<<< HEAD
 	public static class CritListBundle {
 		Inhabitant [] cb;
 		int place;
@@ -41,6 +42,19 @@ public class BundleFactory {
 			place ++;
 		}
 	}
+/*=======
+	private class CritListBundle {
+		Inhabitant [] cb;
+		public CritListBundle() {
+			Collection<Critter> critterList = w.critters.values();
+			cb = new Inhabitant[critterList.size()];
+			int i = 0;
+			for (Critter c : critterList) {
+				cb[i] = new Inhabitant(c);
+			}
+>>>>>>> origin/master
+		}
+	}*/
 	
 	//probably not necessary. An inhabitant constructor could probably do the same
 	/*
