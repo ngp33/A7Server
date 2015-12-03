@@ -91,6 +91,7 @@ public class BundleFactory {
 		int value;
 		int recently_executed_rule;
 		String program; //should this be a string?
+		int amount;
 	}
 	
 	public class critPlacementBundle {

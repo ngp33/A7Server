@@ -18,12 +18,17 @@ import com.google.gson.Gson;
 import RequestHandler.AdminBundles.numSteps;
 import RequestHandler.AdminBundles.runRate;
 import RequestHandler.BundleFactory.critPlacementBundle;
+import RequestHandler.BundleFactory.inhabitants;
 import RequestHandler.BundleFactory.placement;
 import ast.ProgramImpl;
 import console.Console;
 import parse.ParserImpl;
 import world.Critter;
 import world.Food;
+<<<<<<< Updated upstream
+=======
+import world.Rock;
+>>>>>>> Stashed changes
 import world.World;
 
 //import world.World;
@@ -143,13 +148,35 @@ public class ServerRequestHandler extends HttpServlet {
 			break;
 		default:
 			if (splice(URIPath, 2).equals("CritterWorld/world/create_entity")) {
-				
+				sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
+				handleEntity(gson.fromJson(br, BundleFactory.inhabitants.class), sessionID, response);
 			}
 			break;
 		}
 		System.out.println("POST sent to " + URIPath);
 	}
 	
+
+	private void handleEntity(inhabitants obj, int sessionID, HttpServletResponse response) throws IOException {
+		response.addHeader("Content-Type", "text/plain");
+		if (writeOrAdmin(sessionID)) {
+			if (w.getNumRep(new int[] { obj.row, obj.col }) == 0) { //checks that the hex is empty
+				if (obj.type.equals("rock")) {
+					w.replace(new Rock(), w.getHex(obj.row, obj.col));
+				}
+				else {
+					w.replace(new Food(obj.amount), w.getHex(obj.row, obj.col));
+				}
+				response.setStatus(201);
+				response.getWriter().append("Ok");
+			} else {
+				response.setStatus(406);
+			}
+		} else {
+			response.setStatus(401);
+		}
+
+	}
 
 	private void handleRun(runRate Rate, int sessionID, HttpServletResponse response) throws IOException {
 		response.addHeader("Content-Type", "text/plain");
