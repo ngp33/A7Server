@@ -13,17 +13,7 @@ public class BundleFactory {
 	public BundleFactory(World w) {
 		this.w = w;
 	}
-	
-	
-	/**Makes a new critListBundle*/
-	public critListBundle getCritListBundle() {
-		return new critListBundle();
-	}
-	
-	/**Makes a new Critter bundle*/
-	public critBundle getCritBundle(int critID) {
-		return new critBundle(critID);
-	}
+
 	
 	/**Gets the world or the subsection of the world since some number of timesteps
 	 * if the specifications are the world boundaries (0, w.rowmax, 0, w.colmax) this will
@@ -34,20 +24,19 @@ public class BundleFactory {
 	}
 	
 	private class critListBundle {
-		//Linkedlist to hold the critters? //Nah it should be good
-		critBundle [] cb; //this is probably incompatible with the info given in the API //Nah it should be good
+		CritBundle [] cb;
 		public critListBundle() {
 			Collection<Critter> critterList = w.critters.values();
-			cb = new critBundle[critterList.size()];
+			cb = new CritBundle[critterList.size()];
 			int i = 0;
 			for (Critter c : critterList) {
-				cb[i] = new critBundle(c.id);
+				cb[i] = new CritBundle(c.id);
 			}
 		}
 	}
 	
-	private class critBundle extends inhabitants {
-		public critBundle(int critID) {
+	private class CritBundle extends Inhabitant {
+		public CritBundle(int critID) {
 			//TODO form the bundle based on the critter ID.
 			Critter c= w.critters.get(critID);
 			id = critID;
@@ -71,7 +60,7 @@ public class BundleFactory {
 		int rows;
 		int cols;
 		int [] dead_critters;
-		inhabitants [] state;
+		Inhabitant [] state;
 		public worldBundle(int rone, int rtwo, int cone, int ctwo, int timeinterval) {
 			//TODO get world dif over this time
 		}
@@ -80,7 +69,7 @@ public class BundleFactory {
 	/**A general class for the inhabitants. It has all the fields
 	 * that any inhabitant would need, so all inhabitants can be
 	 * unpacked using this class*/
-	public class inhabitants {
+	public class Inhabitant {
 		int row;
 		int col;
 		String type;
@@ -92,33 +81,37 @@ public class BundleFactory {
 		int recently_executed_rule;
 		String program; //should this be a string?
 		int amount;
+		private Inhabitant (Critter c) {
+			
+		}
 	}
 	
-	public class critPlacementBundle {
+	/**A bundle of critters which is used in the Post method*/
+	public class CritPlacementBundle {
 		String species_id;
 		String program;
 		int [] mem;
-		placement [] positions;
+		Placement [] positions;
 		int num;
-		private critPlacementBundle(Critter c) {
+		private CritPlacementBundle(Critter c) {
 			species_id = c.name;
 			program = c.genes.toString();
 			mem = c.mem;
 		}
 		/**Makes a placementbundle where location of placement is specified for each critter*/
-		public critPlacementBundle(Critter c, placement [] pos) {
+		public CritPlacementBundle(Critter c, Placement [] pos) {
 			this(c);
 			positions = pos;
 		}
 		/**Makes a placementbundle where there is a specified number of randomly placed crits*/
-		public critPlacementBundle(Critter c, int number) {
+		public CritPlacementBundle(Critter c, int number) {
 			this(c);
 			num = number;
 		}
 		
 	}
 	
-	public class placement {
+	public class Placement {
 		int row;
 		int col;
 	}

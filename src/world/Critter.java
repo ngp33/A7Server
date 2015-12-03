@@ -14,13 +14,14 @@ public class Critter extends Hex {
 	public int direction;
 	public World w;
 	public int [] mem;
-	public String name; //invariant--all critters with the same name have the same genes.
+	/**Invariant: all critters with the same name have the same genes*/
+	public String name;
 	public boolean matingdance;
 	public Random r = new Random(); //this is useful to have for the random sense and I didn't want to keep generating random objects.
 	public Rule mostrecentrule;
 	public Integer mostrecentruleplace;
 	
-	public int id;
+	public int id; //is it necessary for the critter to know its ID?
 	
 	/**ID of the session that created the critter*/
 	public int godId;

@@ -17,9 +17,9 @@ import com.google.gson.Gson;
 
 import RequestHandler.AdminBundles.numSteps;
 import RequestHandler.AdminBundles.runRate;
-import RequestHandler.BundleFactory.critPlacementBundle;
-import RequestHandler.BundleFactory.inhabitants;
-import RequestHandler.BundleFactory.placement;
+import RequestHandler.BundleFactory.CritPlacementBundle;
+import RequestHandler.BundleFactory.Inhabitant;
+import RequestHandler.BundleFactory.Placement;
 import ast.ProgramImpl;
 import console.Console;
 import parse.ParserImpl;
@@ -28,8 +28,6 @@ import world.Food;
 import world.Rock;
 import world.World;
 
-//import world.World;
-//I added src repository to the buildpath so we could use world (I think). Hopefully this isn't a problem?
 @WebServlet("/")
 public class ServerRequestHandler extends HttpServlet {
 	
@@ -40,12 +38,12 @@ public class ServerRequestHandler extends HttpServlet {
 	BundleFactory bf;
 	AdminBundles ab;
 	Gson gson = new Gson(); //I sort of don't like giving values to the instance variables here...
-	//Invariant sessID 1 = read, sessID 2 = write, sessID 3 = Admin
 	Random rando = new Random(); //Initialize at some point TODO
 	ParserImpl pi = new ParserImpl();
 	/**invariant--is true when the world is running continuously and false otherwise.*/
 	boolean running;
 	Timer timer;
+	PostRequests pr;
 	
 	/** Version of the world running on the server. Increments when:<br>
 	 * 	    - The world steps<br>
@@ -65,11 +63,10 @@ public class ServerRequestHandler extends HttpServlet {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L; //Neil, what is this? //Something needed for HttpServlet. Auto-generated.
+	private static final long serialVersionUID = 1L;
 	
 	
-	class URIInfo { //could this maybe be a separate file? I'm not terribly fond of defining
-		//a class within another class
+	class URIInfo { 
 		
 		String path;
 		HashMap<String, String> queryParams = new HashMap<String, String>();
@@ -105,9 +102,10 @@ public class ServerRequestHandler extends HttpServlet {
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
 		String URIPath = reqStringInfo.path;
 		System.out.println(URIPath);
-		switch (splice(URIPath,2)) { //TODO I assume that URIPath itself will not be one of these values,
-		//and that we will have to write some method to get this information
+		int sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
+		switch (splice(URIPath,2)) {
 		case "CritterWorld/critters": //list all critters
+			handleCritterList(sessionID, response);
 			break;
 		case "CritterWorld/critter": //retrieve a critter
 			break;
@@ -119,6 +117,11 @@ public class ServerRequestHandler extends HttpServlet {
 		System.out.println("GET sent to " + URIPath);
 	}
 	
+	private void handleCritterList(int sessionID, HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
@@ -127,31 +130,31 @@ public class ServerRequestHandler extends HttpServlet {
 		int sessionID;
 		switch (splice(URIPath,2)) {
 		case "CritterWorld/login":
-			handleLogin(gson.fromJson(br, AdminBundles.login.class), response);
+			pr.handleLogin(gson.fromJson(br, AdminBundles.login.class), response);
 			break;
 		case "CritterWorld/critters":
 			sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
-			handleLoadNewCritters(gson.fromJson(br, BundleFactory.critPlacementBundle.class), sessionID, response);
+			pr.handleLoadNewCritters(gson.fromJson(br, BundleFactory.CritPlacementBundle.class), sessionID, response);
 			break;
 		case "CritterWorld/world":
 			w = new World(); //A little confused on the json for reading from a new world
 			//It looks like we might need to make use of loadworld from console.
 			bf = new BundleFactory(w);
-			handleNewWorld();
+			pr.handleNewWorld();
 			//FROM THE FILE??? TODO
 			break;
 		case "CritterWorld/step":
 			sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
-			handleStep(gson.fromJson(br, AdminBundles.numSteps.class), sessionID, response);
+			pr.handleStep(gson.fromJson(br, AdminBundles.numSteps.class), sessionID, response);
 			break;
 		case "CritterWorld/run":
 			sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
-			handleRun(gson.fromJson(br, AdminBundles.runRate.class), sessionID, response);
+			pr.handleRun(gson.fromJson(br, AdminBundles.runRate.class), sessionID, response);
 			break;
 		default:
 			if (splice(URIPath, 2).equals("CritterWorld/world/create_entity")) {
 				sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
-				handleEntity(gson.fromJson(br, BundleFactory.inhabitants.class), sessionID, response);
+				handleEntity(gson.fromJson(br, BundleFactory.Inhabitant.class), sessionID, response);
 			}
 			break;
 		}
@@ -159,7 +162,7 @@ public class ServerRequestHandler extends HttpServlet {
 	}
 	
 
-	private void handleEntity(inhabitants obj, int sessionID, HttpServletResponse response) throws IOException {
+	/*private void handleEntity(Inhabitant obj, int sessionID, HttpServletResponse response) throws IOException {
 		response.addHeader("Content-Type", "text/plain");
 		if (writeOrAdmin(sessionID)) {
 			if (w.getNumRep(new int[] { obj.row, obj.col }) == 0) { //checks that the hex is empty
@@ -211,7 +214,7 @@ public class ServerRequestHandler extends HttpServlet {
 	}
 	
 	/**Effect: runs the world at the specified rate*/
-	private void runworld(double rate) {
+	/*private void runworld(double rate) {
 		if (rate == 0d) {
 			timer.cancel();
 			return;
@@ -240,7 +243,7 @@ public class ServerRequestHandler extends HttpServlet {
 	private void handleStep(numSteps numSteps, int sessionID, HttpServletResponse response) {
 		response.addHeader("Content-Type", "text/plain");
 		if (writeOrAdmin(sessionID)) {
-			if (!running) {
+			if (!running) { 
 				int counter = numSteps.getStepnum();
 				
 				LogEntry logEntry = w.advanceTime(counter);
@@ -271,7 +274,7 @@ public class ServerRequestHandler extends HttpServlet {
 
 	/**Invariant: The bundle is not malformatted (ie. it doesn't have both positions and num)
 	 * Invariant: Num is a valid number*/
-	private void handleLoadNewCritters(critPlacementBundle cpb, int sessionID, HttpServletResponse r) {
+	/*private void handleLoadNewCritters(CritPlacementBundle cpb, int sessionID, HttpServletResponse r) {
 		if (writeOrAdmin(sessionID)) {
 			LogEntry logEntry = new LogEntry();
 			
@@ -283,7 +286,7 @@ public class ServerRequestHandler extends HttpServlet {
 				Console.randomPlacement(w, c, cpb.num, c.r);
 
 			} else {
-				for (placement p : cpb.positions) {
+				for (Placement p : cpb.positions) {
 					if (w.isInGrid(p.row, p.col)) {
 						Critter k = c.copy();
 						k.row = p.row;
@@ -310,22 +313,25 @@ public class ServerRequestHandler extends HttpServlet {
 	 * @param info
 	 * @param r
 	 */
-	private void handleLogin(AdminBundles.login info, HttpServletResponse r) {
+	/*private void handleLogin(AdminBundles.login info, HttpServletResponse r) {
 		if (info.password.equals(LevelPassword.get(info.level))) {
 			r.addHeader("Content-Type", "application/json");
 			r.setStatus(200);
 			PrintWriter pw;
 			try {
 				pw = r.getWriter();
+				int sessID = sessIDAccessLevel.size();
+				String s = gson.toJson(new AdminBundles.SessID(sessID));
+				pw.append(s);
 				switch (info.level) {
 				case "read":
-					pw.append(gson.toJson(new AdminBundles.SessID(1)));
+					sessIDAccessLevel.put(sessID, "read");
 					break;
 				case "write":
-					pw.append(gson.toJson(new AdminBundles.SessID(2)));
+					sessIDAccessLevel.put(sessID, "write");
 					break;
 				case "admin":
-					pw.append(gson.toJson(new AdminBundles.SessID(3)));
+					sessIDAccessLevel.put(sessID, "admin");
 					break;
 				}
 				pw.flush();
@@ -339,7 +345,7 @@ public class ServerRequestHandler extends HttpServlet {
 			r.setStatus(401);
 		}
 		
-	}
+	}*/
 
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
