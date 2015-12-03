@@ -47,7 +47,7 @@ public class ServerRequestHandler extends HttpServlet {
 	boolean running;
 	Timer timer;
 	
-	/** Version of the world running on the server. Increments when<br>
+	/** Version of the world running on the server. Increments when:<br>
 	 * 	    - The world steps<br>
 	 * 	    - A critter is added<br>
 	 *      - Many critters are added at once at random locations<br>
@@ -56,6 +56,11 @@ public class ServerRequestHandler extends HttpServlet {
 	 */
 	int version;
 	WorldLog log;
+	
+	/** The session ID to assign to the next client that connects. Increments by 1 with each client.
+	 * Assume it never reaches -1.
+	 */
+	int nextSessionID = 1;
 
 	/**
 	 * 
