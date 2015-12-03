@@ -23,9 +23,10 @@ public class BundleFactory {
 		
 	}
 	
-	private class critListBundle {
+	//Used in getting the critterList I assume
+	private class CritListBundle {
 		CritBundle [] cb;
-		public critListBundle() {
+		public CritListBundle() {
 			Collection<Critter> critterList = w.critters.values();
 			cb = new CritBundle[critterList.size()];
 			int i = 0;
@@ -35,6 +36,8 @@ public class BundleFactory {
 		}
 	}
 	
+	//probably not necessary. An inhabitant constructor could probably do the same
+	/*
 	private class CritBundle extends Inhabitant {
 		public CritBundle(int critID) {
 			//TODO form the bundle based on the critter ID.
@@ -48,8 +51,9 @@ public class BundleFactory {
 			String [] str = c.genes.toString().split("\n");
 			recently_executed_rule = c.mostrecentruleplace;
 		}
-	}
+	}*/
 	
+	/**Will be used in getting the world I assume...*/
 	private class worldBundle {
 		int current_timestep;
 		int current_version_number;
@@ -68,7 +72,7 @@ public class BundleFactory {
 	
 	/**A general class for the inhabitants. It has all the fields
 	 * that any inhabitant would need, so all inhabitants can be
-	 * unpacked using this class*/
+	 * unpacked using this class. Used so far in create_entity among other things*/
 	public class Inhabitant {
 		int row;
 		int col;
@@ -82,6 +86,14 @@ public class BundleFactory {
 		String program; //should this be a string?
 		int amount;
 		private Inhabitant (Critter c) {
+			id = c.id;
+			row = c.row;
+			col = c.col;
+			species_id = c.name;
+			direction = c.direction;
+			mem = c.mem;
+			String [] str = c.genes.toString().split("\n");
+			recently_executed_rule = c.mostrecentruleplace;
 			
 		}
 	}

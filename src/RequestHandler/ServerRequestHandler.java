@@ -32,17 +32,16 @@ import world.World;
 public class ServerRequestHandler extends HttpServlet {
 	
 	World w;
-	HashMap<String, String> LevelPassword; //A mapping of levels to passwords
-	HashMap<Integer, String> sessIDAccessLevel; //A mapping of sessionIDs to AccessLevels so that
+	//HashMap<String, String> LevelPassword; //A mapping of levels to passwords
+	//HashMap<Integer, String> sessIDAccessLevel; //A mapping of sessionIDs to AccessLevels so that
 	//the mapping is easily changed and the code is more readable.
-	BundleFactory bf;
-	AdminBundles ab;
 	Gson gson = new Gson(); //I sort of don't like giving values to the instance variables here...
-	Random rando = new Random(); //Initialize at some point TODO
+	//Random rando = new Random(); //Initialize at some point TODO
 	ParserImpl pi = new ParserImpl();
 	/**invariant--is true when the world is running continuously and false otherwise.*/
-	boolean running;
-	Timer timer;
+	//boolean running;
+	GetRequests gr;
+	//Timer timer;
 	PostRequests pr;
 	
 	/** Version of the world running on the server. Increments when:<br>
@@ -105,7 +104,7 @@ public class ServerRequestHandler extends HttpServlet {
 		int sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
 		switch (splice(URIPath,2)) {
 		case "CritterWorld/critters": //list all critters
-			handleCritterList(sessionID, response);
+			
 			break;
 		case "CritterWorld/critter": //retrieve a critter
 			break;
@@ -117,11 +116,6 @@ public class ServerRequestHandler extends HttpServlet {
 		System.out.println("GET sent to " + URIPath);
 	}
 	
-	private void handleCritterList(int sessionID, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
 		URIInfo reqStringInfo = new URIInfo(request.getRequestURI());
@@ -139,7 +133,6 @@ public class ServerRequestHandler extends HttpServlet {
 		case "CritterWorld/world":
 			w = new World(); //A little confused on the json for reading from a new world
 			//It looks like we might need to make use of loadworld from console.
-			bf = new BundleFactory(w);
 			pr.handleNewWorld();
 			//FROM THE FILE??? TODO
 			break;
@@ -154,7 +147,7 @@ public class ServerRequestHandler extends HttpServlet {
 		default:
 			if (splice(URIPath, 2).equals("CritterWorld/world/create_entity")) {
 				sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
-				handleEntity(gson.fromJson(br, BundleFactory.Inhabitant.class), sessionID, response);
+				pr.handleEntity(gson.fromJson(br, BundleFactory.Inhabitant.class), sessionID, response);
 			}
 			break;
 		}
@@ -378,7 +371,7 @@ public class ServerRequestHandler extends HttpServlet {
 			}
 			
 			Critter selected = w.getCritterById(critterId);
-			String permLevel = sessIDAccessLevel.get(sessionId);
+			String permLevel = sessIDAccessLevel.get(sessionId); //Can we move this to PostRequests?
 			
 			if (permLevel == "admin" || selected.godId == sessionId) {
 				LogEntry logEntry = new LogEntry();
@@ -411,13 +404,13 @@ public class ServerRequestHandler extends HttpServlet {
 		return sb.toString();
 	}
 	
-	/**Returns true if the sessionID corresponds to write/admin access*/
-	private boolean writeOrAdmin(int SessionID) {
+	/*/**Returns true if the sessionID corresponds to write/admin access*/
+	/*private boolean writeOrAdmin(int SessionID) {
 		return !sessIDAccessLevel.get(SessionID).equals("read");
 	}
 	
 	/**Returns true if the sessionID corresponds to admin access*/
-	private boolean Admin(int SessionID) {
+	/*private boolean Admin(int SessionID) {
 		return sessIDAccessLevel.get(SessionID).equals("admin");
-	}
+	}*/
 }
