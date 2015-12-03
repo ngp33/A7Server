@@ -25,10 +25,7 @@ import console.Console;
 import parse.ParserImpl;
 import world.Critter;
 import world.Food;
-<<<<<<< Updated upstream
-=======
 import world.Rock;
->>>>>>> Stashed changes
 import world.World;
 
 //import world.World;
