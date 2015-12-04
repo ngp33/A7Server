@@ -77,15 +77,18 @@ public class Crittersenses {
 			int [] rowcol = Crittermethods.dircoords(c, true);
 			temp = c.w.getHex(rowcol[0], rowcol[1]);
 			temp.direct = c.direction;
-			temp.distance = (x + 1) % 3;
+			temp.distance = c.direction == 3 ? 3 : (c.direction) % 3;
 			if (temp.getNumRep() < c.w.ROCK_VALUE) {
+				System.out.println("here");
 				potents[x] = temp.distance * 1000 + temp.direct;
 			} else {
+				temp.distance ++; //To get on the hex.
 				temp = trav.traverse(temp);
 				if (temp != null) {
 					potents[x] = temp.distance * 1000 + temp.direct;
 				}
 			}
+
 		}
 		c.direction = (c.direction + 1) % 6;
 		int min = 100000;
@@ -93,6 +96,7 @@ public class Crittersenses {
 			if (potents[place] < min) {
 				min = potents[place];
 			}
+			//System.out.println("potential " + place + ": " + potents[place]);
 		}
 		return min;
 	}

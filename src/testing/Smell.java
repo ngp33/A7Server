@@ -45,11 +45,12 @@ public class Smell {
 	}
 	@Test
 	public void smelltwo() {
-		w.replace(new Food(100), w.getHex(5, 5), al);
+		w.replace(new Food(100), w.getHex(2, 3), al);
 		System.out.println(c.smell());
-		assertTrue(c.smell() == 2001);
+		assertTrue(c.smell() == 3003);
 	}
 	
+	@Ignore
 	@Test
 	public void smellthree() {
 		w.replace(new Food(100), w.getHex(2, 2), al);
