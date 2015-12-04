@@ -36,7 +36,7 @@ public class ServerRequestHandler extends HttpServlet {
 	//HashMap<Integer, String> sessIDAccessLevel; //A mapping of sessionIDs to AccessLevels so that
 	//the mapping is easily changed and the code is more readable.
 	Gson gson;//I sort of don't like giving values to the instance variables here...
-	//Random rando = new Random(); //Initialize at some point TODO
+	//Random rando = new Random();
 	ParserImpl pi;
 	/**invariant--is true when the world is running continuously and false otherwise.*/
 	//boolean running;
@@ -142,7 +142,7 @@ public class ServerRequestHandler extends HttpServlet {
 		case "CritterWorld/world":
 			w = new World(); //A little confused on the json for reading from a new world
 			//It looks like we might need to make use of loadworld from console.
-			pr.handleNewWorld();
+			//pr.handleNewWorld();
 			//FROM THE FILE??? TODO
 			break;
 		case "CritterWorld/step":
@@ -257,7 +257,6 @@ public class ServerRequestHandler extends HttpServlet {
 				try {
 					response.getWriter().append("Ok");
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else {
@@ -270,7 +269,6 @@ public class ServerRequestHandler extends HttpServlet {
 	}
 
 	private void handleNewWorld() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -296,7 +294,7 @@ public class ServerRequestHandler extends HttpServlet {
 						w.addCritter(k);
 						w.replace(k, w.getHex(k.row, k.col), logEntry.updates);
 					} else {
-						// TODO notify user of failure somehow
+						// notify user of failure somehow
 					}
 				}
 			}
@@ -339,7 +337,6 @@ public class ServerRequestHandler extends HttpServlet {
 				pw.flush();
 				pw.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

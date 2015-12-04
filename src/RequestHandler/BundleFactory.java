@@ -89,13 +89,13 @@ public class BundleFactory {
 
 		}
 		public worldBundle(int rone, int rtwo, int cone, int ctwo, PostRequests pr, int sesid, String al) {
-			this(rone, rtwo, cone, ctwo, 0, pr, sesid, al);
+			this(rone, rtwo, cone, ctwo, -1, pr, sesid, al);
 		}
 		public worldBundle(int oldVersion, PostRequests pr, int sesid, String al) {
 			
 		}
 		public worldBundle(PostRequests pr, int sesid, String al) {
-			this(0, pr, sesid, al);
+			this(-1, pr, sesid, al);
 		}
 		
 		private void fillInBundle(LogEntry le, PostRequests pr, int sessionID, String accesslevel) {
