@@ -78,14 +78,13 @@ public class Crittersenses {
 			temp = c.w.getHex(rowcol[0], rowcol[1]);
 			temp.direct = c.direction;
 			temp.distance = x > 3 ? x * 2 % 3 : x;
+
 			if (temp.getNumRep() < c.w.ROCK_VALUE) {
-				System.out.println("here:"); //this prints too many times
-				potents[x] = temp.distance * 1000 + temp.direct;
+				potents[x] = temp.distance * 1000 + x % 6;//these are wrong.
 			} else if (temp.getNumRep() == 0){
-				//temp.distance ++; //To get on the hex.
 				temp = trav.traverse(temp);
 				if (temp != null) {
-					potents[x % 6] = temp.distance * 1000 + temp.direct;
+					potents[x % 6] = temp.distance * 1000 + x % 6;
 				}
 			} 
 

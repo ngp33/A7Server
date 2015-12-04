@@ -139,8 +139,9 @@ public class Traverser {
 	 * @return
 	 */
 	private int rotations(Hex z, int dir) {
-		int dif = z.direct - dir;
-		return dif < 0 ? (dif * - 1) % 3 : dif % 3;
+		int dif = z.direct - dir > 0 ? z.direct - dir : dir - z.direct;
+		return dif > 3 ? dif * 2 % 3 : dif;
+		//return dif < 0 ? (dif * - 1) % 3 : dif % 3;
 	}
 
 
