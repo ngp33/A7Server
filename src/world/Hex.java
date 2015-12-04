@@ -5,6 +5,7 @@ public abstract class Hex {
 	public int row;
 	public int col;
 	public int direct;
+	/**Used in the traverser. It represents the distance to face this hex*/
 	public int distance;
 	
 	public abstract int getNumRep();

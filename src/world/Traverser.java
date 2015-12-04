@@ -13,7 +13,8 @@ public class Traverser {
 	PriorityQueue<Hex> pq;
 	int turns;
 	World w;
-	Food lowestFood; //lowest food is the foodhex with the lowest distance encountered thus far.
+	Food lowestFood; //lowest food is the foodhex with the lowest distance encountered thus far
+	int maxdistance;
 
 	public Traverser(World w) {
 		this.w = w;
@@ -50,11 +51,12 @@ public class Traverser {
 	private void reset() {
 		w.clearHexDist();
 		lowestFood = null;
+		maxdistance = w.MAX_SMELL_DISTANCE;
 		pq.clear();
 	}
 
 
-	private void labelAhead(int row, int col, int dir, int turns) {
+	/*private void labelAhead(int row, int col, int dir, int turns) {
 		dir = dir  >= 3 ? -dir : dir;
 		int tempdir = dir % 3;
 		if (tempdir < 2){
@@ -75,7 +77,7 @@ public class Traverser {
 				lowestFood = (Food) h;
 			}
 		}
-	}
+	}*/
 	
 	
 	/**Note, this is inconsistent with equals I think*/
@@ -93,29 +95,34 @@ public class Traverser {
 	private void getsurrounding(int drow, int dcol, int dir, Hex n) {
 		Hex h = w.getHex(n.row + drow, n.col + dcol);
 
-		if (h.distance == -1) {
-			h.distance = n.distance + rotations(n, dir) + 1;
-			// +1 because n.distance is distance to face n
-			h.direct = dir;
-			if (h.getNumRep() == 0 && h.distance < 10) {
-				pq.offer(h);
-			}
-		} else {
-			h.distance = min(n.distance + rotations(n, dir) + 1, h.distance);
-			int plaus = n.distance + rotations(n, dir) + 1;
-			if (h.distance > plaus) {
-				h.distance = plaus;
+		if (h.getNumRep() == 0 || h.getNumRep() < w.ROCK_VALUE) {
+			if (h.distance == -1) {
+				h.distance = n.distance + rotations(n, dir) + 1;
+				// +1 because n.distance is distance to face n
 				h.direct = dir;
-				if (h.getNumRep() == 0) {
-					pq.remove(h);
+				if (h.getNumRep() == 0 && h.distance < maxdistance) {
 					pq.offer(h);
 				}
+			} else {
+				//h.distance = min(n.distance + rotations(n, dir) + 1, h.distance);
+				int plaus = n.distance + rotations(n, dir) + 1;
+				if (h.distance > plaus) {
+					h.distance = plaus;
+					h.direct = dir;
+					if (h.getNumRep() == 0) {
+						pq.remove(h);
+						pq.offer(h);
+					}
+				}
 			}
-		}
-		if (h.getNumRep() < w.ROCK_VALUE) {
-			Food f = (Food) h;
-			if (lowestFood == null || lowestFood.distance > h.distance) {
-				lowestFood = f;
+			if (h.getNumRep() < w.ROCK_VALUE) {
+				Food f = (Food) h;
+				if (lowestFood == null) {
+					lowestFood = f;
+				}
+				else if (lowestFood.distance > h.distance) {
+					lowestFood = f;
+				}
 			}
 		}
 	}

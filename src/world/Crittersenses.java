@@ -72,25 +72,24 @@ public class Crittersenses {
 			potents[it] = 100000;
 		}
 		Hex temp;
-		for (int x = 0; x < 6; x ++ ) {
+		for (int x = 1; x <= 6; x ++ ) {
 			c.direction = (c.direction + 1) % 6;
 			int [] rowcol = Crittermethods.dircoords(c, true);
 			temp = c.w.getHex(rowcol[0], rowcol[1]);
 			temp.direct = c.direction;
-			temp.distance = c.direction == 3 ? 3 : (c.direction) % 3;
+			temp.distance = x > 3 ? x * 2 % 3 : x;
 			if (temp.getNumRep() < c.w.ROCK_VALUE) {
-				System.out.println("here");
+				System.out.println("here:"); //this prints too many times
 				potents[x] = temp.distance * 1000 + temp.direct;
-			} else {
-				temp.distance ++; //To get on the hex.
+			} else if (temp.getNumRep() == 0){
+				//temp.distance ++; //To get on the hex.
 				temp = trav.traverse(temp);
 				if (temp != null) {
-					potents[x] = temp.distance * 1000 + temp.direct;
+					potents[x % 6] = temp.distance * 1000 + temp.direct;
 				}
-			}
+			} 
 
 		}
-		c.direction = (c.direction + 1) % 6;
 		int min = 100000;
 		for (int place = 0; place < 6; place ++) {
 			if (potents[place] < min) {
