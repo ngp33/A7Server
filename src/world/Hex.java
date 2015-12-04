@@ -4,6 +4,8 @@ public abstract class Hex {
 
 	public int row;
 	public int col;
+	public int direct;
+	public int distance;
 	
 	public abstract int getNumRep();
 	
@@ -18,5 +20,11 @@ public abstract class Hex {
 	//The info in 6. I could do it easily for critter if you want
 
 	abstract char getASCIIRep();
+
+
+	public void clearDist() {
+		distance = -1;
+	}
+
 
 }

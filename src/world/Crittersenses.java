@@ -61,5 +61,42 @@ public class Crittersenses {
 	public static int rando(Critter c, int bound) {
 		return bound < 2 ? 0 : c.r.nextInt(bound);
 	}
+	public static int smell(Critter critter) {
+		Traverser t = new Traverser (critter.w);
+		return foodSearch(t,critter);
+	}
 
+	private static int foodSearch(Traverser trav, Critter c) {
+		int [] potents = new int [6];
+		for (int it = 0; it < 6; it ++) {
+			potents[it] = 100000;
+		}
+		Hex temp;
+		for (int x = 0; x < 6; x ++ ) {
+			c.direction = (c.direction + 1) % 6;
+			int [] rowcol = Crittermethods.dircoords(c, true);
+			temp = c.w.getHex(rowcol[0], rowcol[1]);
+			temp.direct = c.direction;
+			temp.distance = (x + 1) % 3;
+			if (temp.getNumRep() < c.w.ROCK_VALUE) {
+				potents[x] = temp.distance * 1000 + temp.direct;
+			} else {
+				temp = trav.traverse(temp);
+				if (temp != null) {
+					potents[x] = temp.distance * 1000 + temp.direct;
+				}
+			}
+		}
+		c.direction = (c.direction + 1) % 6;
+		int min = 100000;
+		for (int place = 0; place < 6; place ++) {
+			if (potents[place] < min) {
+				min = potents[place];
+			}
+		}
+		return min;
+	}
+
+
+	
 }
