@@ -4,8 +4,11 @@ public abstract class Hex {
 
 	public int row;
 	public int col;
+	public int direct;
+	/**Used in the traverser. It represents the distance to face this hex*/
+	public int distance;
 	
-	abstract int getNumRep();
+	public abstract int getNumRep();
 	
 
 	/**A method for getting the printable information for a hex in accordance
@@ -18,5 +21,11 @@ public abstract class Hex {
 	//The info in 6. I could do it easily for critter if you want
 
 	abstract char getASCIIRep();
+
+
+	public void clearDist() {
+		distance = -1;
+	}
+
 
 }

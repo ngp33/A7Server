@@ -37,10 +37,10 @@ public class WorldLog {
 			}
 		}
 		
-		return new LogEntry(diff, deadCritters);
+		return new LogEntry(diff, deadCritters); //TODO make it so the new logEntry has the correct version num.
 	}
 	
-	public LogEntry getDiff(int oldVersion, int rowMin, int rowMax, int colMin, int colMax) {
+	public LogEntry getDiffBounded(int oldVersion, int rowMin, int rowMax, int colMin, int colMax) {
 		ArrayList<HexUpdate> diff = new ArrayList<HexUpdate>();
 		ArrayList<Integer> deadCritters = new ArrayList<Integer>();
 		
@@ -63,7 +63,7 @@ public class WorldLog {
 		
 		return new LogEntry(diff, deadCritters);
 	}
-	
+
 	/*public void mergeToPreviousVersion(int endVersion) {
 		ArrayList<HexUpdate> updates = getDiff(endVersion);
 		

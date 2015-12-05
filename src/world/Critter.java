@@ -143,7 +143,7 @@ public class Critter extends Hex {
 	}
 	
 	public int smell() {
-		return 0;
+		return Crittersenses.smell(this);
 	}
 	
 	public int random(int num) {

@@ -1,12 +1,9 @@
 package RequestHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
 import java.util.HashMap;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Scanner;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,36 +12,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
-import RequestHandler.AdminBundles.numSteps;
-import RequestHandler.AdminBundles.runRate;
-import RequestHandler.BundleFactory.CritPlacementBundle;
-import RequestHandler.BundleFactory.Inhabitant;
-import RequestHandler.BundleFactory.Placement;
-import ast.ProgramImpl;
-import console.Console;
+
 import parse.ParserImpl;
 import world.Critter;
 import world.Food;
-import world.Rock;
 import world.World;
 
 @WebServlet("/")
 public class ServerRequestHandler extends HttpServlet {
 	
 	World w;
-	//HashMap<String, String> LevelPassword; //A mapping of levels to passwords
-	//HashMap<Integer, String> sessIDAccessLevel; //A mapping of sessionIDs to AccessLevels so that
-	//the mapping is easily changed and the code is more readable.
-	Gson gson;//I sort of don't like giving values to the instance variables here...
-	//Random rando = new Random(); //Initialize at some point TODO
+	Gson gson;
 	ParserImpl pi;
 	/**invariant--is true when the world is running continuously and false otherwise.*/
-	//boolean running;
 	GetRequests gr;
-	//Timer timer;
 	PostRequests pr;
 	
-	HashMap<Integer, String> sessIDAccessLevel; //Needed for the DELETE request
+	//HashMap<Integer, String> sessIDAccessLevel; //Needed for the DELETE request
 	
 	/** Version of the world running on the server. Increments when:<br>
 	 * 	    - The world steps<br>
@@ -102,8 +86,18 @@ public class ServerRequestHandler extends HttpServlet {
 	public void init() throws ServletException {
 		gson = new Gson();
 		pi = new ParserImpl();
-		
-		sessIDAccessLevel = new HashMap<Integer, String>();
+		pr = new PostRequests();
+		gr = new GetRequests();
+		gr.pr = pr;
+		Scanner s = new Scanner(System.in);
+		System.out.println("Set up level-password mapping");
+		System.out.println("read password? ");
+		pr.LevelPassword.put("read", s.nextLine());
+		System.out.println("write password? ");
+		pr.LevelPassword.put("write", s.nextLine());
+		System.out.println("admin password? ");
+		pr.LevelPassword.put("admin", s.nextLine());
+		s.close();
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -114,11 +108,37 @@ public class ServerRequestHandler extends HttpServlet {
 		int sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
 		switch (splice(URIPath,2)) {
 		case "CritterWorld/critters": //list all critters
-			
+			gr.handleGetCritterList(sessionID, pr.accessLevel(sessionID), w, response);
 			break;
 		case "CritterWorld/critter": //retrieve a critter
+			gr.handleGetCritter(sessionID, pr.accessLevel(sessionID), w, response, w.getCritterById(Integer.parseInt(reqStringInfo.queryParams.get("id"))));
 			break;
 		case "CritterWorld/world": //Get world or subsection of the world
+			if (reqStringInfo.queryParams.containsKey("from_row")) {
+				int rone = Integer.parseInt(reqStringInfo.queryParams.get("from_row"));
+				int rtwo = Integer.parseInt(reqStringInfo.queryParams.get("to_row"));
+				int cone = Integer.parseInt(reqStringInfo.queryParams.get("from_col"));
+				int ctwo = Integer.parseInt(reqStringInfo.queryParams.get("to_col"));
+				
+				if (reqStringInfo.queryParams.containsKey("update_since")) {
+					int oldVersion = Integer.parseInt(reqStringInfo.queryParams.get("update_since"));
+					gr.handleGetWorldDifSubSince(sessionID, pr.accessLevel(sessionID), w, response,
+							rone, rtwo, cone, ctwo, oldVersion);
+				}
+				else {
+					gr.handleGetWorldDifSub(sessionID, pr.accessLevel(sessionID), w, response,
+							rone, rtwo, cone, ctwo);
+				}
+			}
+			else {
+				if (reqStringInfo.queryParams.containsKey("update_since")) {
+					int oldVersion = Integer.parseInt(reqStringInfo.queryParams.get("update_since"));
+					gr.handleGetWorldSince(sessionID, pr.accessLevel(sessionID), w, response, oldVersion);
+				}
+				else {
+					gr.handleGetWorld(sessionID, pr.accessLevel(sessionID), w, response);
+				}
+			}
 			break;
 		default:
 			break;
@@ -143,7 +163,7 @@ public class ServerRequestHandler extends HttpServlet {
 		case "CritterWorld/world":
 			w = new World(); //A little confused on the json for reading from a new world
 			//It looks like we might need to make use of loadworld from console.
-			pr.handleNewWorld();
+			//pr.handleNewWorld();
 			//FROM THE FILE??? TODO
 			break;
 		case "CritterWorld/step":
@@ -258,7 +278,6 @@ public class ServerRequestHandler extends HttpServlet {
 				try {
 					response.getWriter().append("Ok");
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else {
@@ -271,7 +290,6 @@ public class ServerRequestHandler extends HttpServlet {
 	}
 
 	private void handleNewWorld() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -297,7 +315,7 @@ public class ServerRequestHandler extends HttpServlet {
 						w.addCritter(k);
 						w.replace(k, w.getHex(k.row, k.col), logEntry.updates);
 					} else {
-						// TODO notify user of failure somehow
+						// notify user of failure somehow
 					}
 				}
 			}
@@ -340,7 +358,6 @@ public class ServerRequestHandler extends HttpServlet {
 				pw.flush();
 				pw.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -381,7 +398,7 @@ public class ServerRequestHandler extends HttpServlet {
 			}
 			
 			Critter selected = w.getCritterById(critterId);
-			String permLevel = sessIDAccessLevel.get(sessionId); //Can we move this to PostRequests?
+			String permLevel = pr.accessLevel(sessionId); //Can we move this to PostRequests?
 			
 			if (permLevel == "admin" || selected.godId == sessionId) {
 				LogEntry logEntry = new LogEntry();

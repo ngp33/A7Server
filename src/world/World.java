@@ -19,7 +19,7 @@ public class World extends Observable {
 	ArrayList<Critter> firstgencrits;
 	ArrayList<Integer> crittersToRemove = new ArrayList<Integer>();
 	
-	String name; 
+	public String name; 
 	int time = 0;
 	int rows;
 	int columns;
@@ -124,8 +124,8 @@ public class World extends Observable {
 		rows = numRows;
 		columns = numCols;
 		
-		System.out.println(COLUMNS);
-		System.out.println(ROWS);
+		//System.out.println(COLUMNS);
+		//System.out.println(ROWS);
 		
 		//grid = new Hex[numCols][numRows - (numCols + 1) / 2];
 		grid = new Hex[numCols][numRows - numCols/2];
@@ -406,6 +406,15 @@ public class World extends Observable {
 	
 	public Critter getCritterById(int id) {
 		return critters.get(id);
+	}
+
+	/**Clears the distance fields for all hexes if ever they are 'modified'*/
+	public void clearHexDist() {
+		for (Hex [] hp : grid) {
+			for (Hex h : hp) {
+				h.clearDist();
+			}
+		}
 	}
 
 }
