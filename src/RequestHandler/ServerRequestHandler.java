@@ -1,12 +1,9 @@
 package RequestHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
 import java.util.HashMap;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Scanner;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,17 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
-import RequestHandler.AdminBundles.numSteps;
-import RequestHandler.AdminBundles.runRate;
-import RequestHandler.BundleFactory.CritPlacementBundle;
-import RequestHandler.BundleFactory.Inhabitant;
-import RequestHandler.BundleFactory.Placement;
-import ast.ProgramImpl;
-import console.Console;
+
 import parse.ParserImpl;
 import world.Critter;
 import world.Food;
-import world.Rock;
 import world.World;
 
 @WebServlet("/")
@@ -38,7 +28,7 @@ public class ServerRequestHandler extends HttpServlet {
 	GetRequests gr;
 	PostRequests pr;
 	
-	HashMap<Integer, String> sessIDAccessLevel; //Needed for the DELETE request
+	//HashMap<Integer, String> sessIDAccessLevel; //Needed for the DELETE request
 	
 	/** Version of the world running on the server. Increments when:<br>
 	 * 	    - The world steps<br>
@@ -95,8 +85,18 @@ public class ServerRequestHandler extends HttpServlet {
 	public void init() throws ServletException {
 		gson = new Gson();
 		pi = new ParserImpl();
-		
-		sessIDAccessLevel = new HashMap<Integer, String>();
+		pr = new PostRequests();
+		gr = new GetRequests();
+		gr.pr = pr;
+		Scanner s = new Scanner(System.in);
+		System.out.println("Set up level-password mapping");
+		System.out.println("read password? ");
+		pr.LevelPassword.put("read", s.nextLine());
+		System.out.println("write password? ");
+		pr.LevelPassword.put("write", s.nextLine());
+		System.out.println("admin password? ");
+		pr.LevelPassword.put("admin", s.nextLine());
+		s.close();
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
