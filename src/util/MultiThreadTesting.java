@@ -16,35 +16,34 @@ public class MultiThreadTesting {
 	public void addRemove() {
 		one = new Thread() {
 			public void run() {
+				for (int x = 0; x < 15; x ++) {
+					rbi.add(x);
+					//System.out.print(rbi.size());
+					//System.out.println(" " + rbi.tail +"," + rbi.head);
+					System.out.println(x);
+				}
+			}
+		};
+		one.start();
+
+		for (int x = 0; x < 5; x ++) {
+			rbi.remove();
+			if (x == 3) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				for (int x = 0; x < 15; x ++) {
-					//rbi.add(x);
-					//System.out.print(rbi.size());
-					//System.out.println(" " + rbi.tail +"," + rbi.head);
-					 System.out.println("here");
-				}
 			}
-		};
-		two = new Thread() {
-			public void run () {
-				for (int x = 0; x < 5; x ++) {
-					//rbi.remove();
-					System.out.println("there");
-				}
-			}
-		};
-		one.start();
-		for (int x = 0; x < 5; x ++) {
-			//rbi.remove();
 			System.out.println("there");
 		}
-		//two.start();
-		//System.out.println(rbi.t_array);
+		try {
+			one.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 

@@ -73,10 +73,11 @@ public class BundleFactory {
 		}
 	}*/
 	
-	/**Will be used in getting the world I assume...*/
-	public class worldBundle {
+	/**Will be used in getting the world*/
+	public static class worldBundle {
 		int current_timestep;
 		int current_version_number;
+		int update_since;
 		//int update_since not really sure what to do about this.
 		double rate;
 		String name;
@@ -86,7 +87,7 @@ public class BundleFactory {
 		int [] dead_critters;
 		Inhabitant [] state;
 		public worldBundle(int rone, int rtwo, int cone, int ctwo, int oldVersion, PostRequests pr, int sesid, String al) {
-
+			
 		}
 		public worldBundle(int rone, int rtwo, int cone, int ctwo, PostRequests pr, int sesid, String al) {
 			this(rone, rtwo, cone, ctwo, -1, pr, sesid, al);
@@ -99,13 +100,13 @@ public class BundleFactory {
 		}
 		
 		private void fillInBundle(LogEntry le, PostRequests pr, int sessionID, String accesslevel) {
-			current_timestep = w.getTime();
+			current_timestep = pr.w.getTime();
 			current_version_number = le.version;
 			rate = pr.rate;
-			name = w.name;
-			population = w.critters.size();
-			rows = w.ROWS;
-			cols = w.COLUMNS;
+			name = pr.w.name;
+			population = pr.w.critters.size();
+			rows = pr.w.ROWS;
+			cols = pr.w.COLUMNS;
 			int place = 0;
 			Iterator <Integer> i = le.deadCritters.iterator();
 			while (i.hasNext()) {

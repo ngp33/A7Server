@@ -8,11 +8,13 @@ import com.google.gson.Gson;
 
 import RequestHandler.BundleFactory.CritListBundle;
 import RequestHandler.BundleFactory.Inhabitant;
+import RequestHandler.BundleFactory.worldBundle;
 import world.Critter;
 import world.World;
 
 public class GetRequests {
 	Gson gson = new Gson();
+	PostRequests pr;
 	/**Effect: Uploads to the response a list of all the critters the user has access to <br>
 	 * Effect: sets the response status according to the spec.
 	 */
@@ -65,6 +67,45 @@ public class GetRequests {
 	/**Gets the heavyweight critter bundle version*/
 	public static Inhabitant getFullCritterBundle(Critter c) {
 		return new Inhabitant(c);
+	}
+	
+	public void handleGetWorldDifSubSince(int sessionID, String accessLevel, World w, HttpServletResponse r, 
+			int rone, int rtwo, int cone, int ctwo, int oldVersion) {
+		worldBundle wb = new worldBundle(rone, rtwo, cone, ctwo, oldVersion, pr, sessionID, accessLevel);
+		wb.update_since = oldVersion;
+		getWorldResponse(wb, r);
+		
+	}
+	public void handleGetWorldDifSub(int sessionID, String accessLevel, World w, HttpServletResponse r, 
+			int rone, int rtwo, int cone, int ctwo) {
+		worldBundle wb = new worldBundle(rone, rtwo, cone, ctwo, pr, sessionID, accessLevel);
+		getWorldResponse(wb, r);
+	}
+	
+	public void handleGetWorldSince (int sessionID, String accessLevel, World w, HttpServletResponse r,
+			int oldVersion) {
+		worldBundle wb = new worldBundle(oldVersion, pr, sessionID, accessLevel);
+		wb.update_since = oldVersion;
+		getWorldResponse(wb, r);
+
+		
+	}
+	
+	public void handleGetWorld (int sessionID, String accessLevel, World w, HttpServletResponse r) {
+		worldBundle wb = new worldBundle(pr, sessionID, accessLevel);
+		getWorldResponse(wb, r);
+		
+	}
+	
+	private void getWorldResponse(worldBundle wb, HttpServletResponse r) {
+		r.addHeader("Content-Type", "application/json");
+		r.setStatus(200);
+		try {
+			r.getWriter().append(gson.toJson(wb));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }

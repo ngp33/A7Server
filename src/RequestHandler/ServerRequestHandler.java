@@ -32,16 +32,10 @@ import world.World;
 public class ServerRequestHandler extends HttpServlet {
 	
 	World w;
-	//HashMap<String, String> LevelPassword; //A mapping of levels to passwords
-	//HashMap<Integer, String> sessIDAccessLevel; //A mapping of sessionIDs to AccessLevels so that
-	//the mapping is easily changed and the code is more readable.
-	Gson gson;//I sort of don't like giving values to the instance variables here...
-	//Random rando = new Random();
+	Gson gson;
 	ParserImpl pi;
 	/**invariant--is true when the world is running continuously and false otherwise.*/
-	//boolean running;
 	GetRequests gr;
-	//Timer timer;
 	PostRequests pr;
 	
 	HashMap<Integer, String> sessIDAccessLevel; //Needed for the DELETE request
@@ -116,8 +110,34 @@ public class ServerRequestHandler extends HttpServlet {
 			gr.handleGetCritterList(sessionID, pr.accessLevel(sessionID), w, response);
 			break;
 		case "CritterWorld/critter": //retrieve a critter
+			gr.handleGetCritter(sessionID, pr.accessLevel(sessionID), w, response, w.getCritterById(Integer.parseInt(reqStringInfo.queryParams.get("id"))));
 			break;
 		case "CritterWorld/world": //Get world or subsection of the world
+			if (reqStringInfo.queryParams.containsKey("from_row")) {
+				int rone = Integer.parseInt(reqStringInfo.queryParams.get("from_row"));
+				int rtwo = Integer.parseInt(reqStringInfo.queryParams.get("to_row"));
+				int cone = Integer.parseInt(reqStringInfo.queryParams.get("from_col"));
+				int ctwo = Integer.parseInt(reqStringInfo.queryParams.get("to_col"));
+				
+				if (reqStringInfo.queryParams.containsKey("update_since")) {
+					int oldVersion = Integer.parseInt(reqStringInfo.queryParams.get("update_since"));
+					gr.handleGetWorldDifSubSince(sessionID, pr.accessLevel(sessionID), w, response,
+							rone, rtwo, cone, ctwo, oldVersion);
+				}
+				else {
+					gr.handleGetWorldDifSub(sessionID, pr.accessLevel(sessionID), w, response,
+							rone, rtwo, cone, ctwo);
+				}
+			}
+			else {
+				if (reqStringInfo.queryParams.containsKey("update_since")) {
+					int oldVersion = Integer.parseInt(reqStringInfo.queryParams.get("update_since"));
+					gr.handleGetWorldSince(sessionID, pr.accessLevel(sessionID), w, response, oldVersion);
+				}
+				else {
+					gr.handleGetWorld(sessionID, pr.accessLevel(sessionID), w, response);
+				}
+			}
 			break;
 		default:
 			break;
