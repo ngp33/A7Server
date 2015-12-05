@@ -40,6 +40,30 @@ public class WorldLog {
 		return new LogEntry(diff, deadCritters);
 	}
 	
+	public LogEntry getDiff(int oldVersion, int rowMin, int rowMax, int colMin, int colMax) {
+		ArrayList<HexUpdate> diff = new ArrayList<HexUpdate>();
+		ArrayList<Integer> deadCritters = new ArrayList<Integer>();
+		
+		for (LogEntry entry : log) {
+			if (entry.version <= oldVersion) {
+				break;
+			}
+			for (HexUpdate update : entry.updates) {
+				if (update.col <= colMax && update.col >= colMin
+						&& update.row <= rowMax && update.row >= rowMin) {
+					if (!updateAlreadyExists(diff, update)) {
+						diff.add(update);
+					}
+				}
+				for (Integer id : entry.deadCritters) {
+					deadCritters.add(id);
+				}
+			}
+		}
+		
+		return new LogEntry(diff, deadCritters);
+	}
+	
 	/*public void mergeToPreviousVersion(int endVersion) {
 		ArrayList<HexUpdate> updates = getDiff(endVersion);
 		

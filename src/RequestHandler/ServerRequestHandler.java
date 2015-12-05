@@ -52,6 +52,7 @@ public class ServerRequestHandler extends HttpServlet {
 	 *      - Many critters are added at once at random locations<br>
 	 * 	    - A critter is removed<br>
 	 * 	    - A new world is loaded<br>
+	 * 	    - What about critter state change?
 	 */
 	int version;
 	WorldLog log;
