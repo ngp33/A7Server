@@ -46,6 +46,15 @@ public class PostRequests {
 	/**invariant: This will always have the rate at which the world is running*/
 	double rate;
 	
+	
+	public PostRequests() {
+		LevelPassword = new HashMap<String, String>();
+		sessIDAccessLevel = new HashMap<Integer, String>();
+		gson = new Gson();
+		rando = new Random();
+		log = new WorldLog();
+	}
+	
 	/**Effect: If the user successfully provides proper login information, this
 	 * assigns them a sessionID and ensures that they will receive all the rights
 	 * that their clearance level affords them. <br>

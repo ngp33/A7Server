@@ -84,6 +84,7 @@ public class ServerRequestHandler extends HttpServlet {
 
 	
 	public void init() throws ServletException {
+		System.out.println("YEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 		gson = new Gson();
 		pi = new ParserImpl();
 		pr = new PostRequests();
@@ -92,7 +93,8 @@ public class ServerRequestHandler extends HttpServlet {
 		Scanner s = new Scanner(System.in);
 		System.out.println("Set up level-password mapping");
 		System.out.println("read password? ");
-		pr.LevelPassword.put("read", s.nextLine());
+		String readPass = s.nextLine();
+		pr.LevelPassword.put("read", readPass);
 		System.out.println("write password? ");
 		pr.LevelPassword.put("write", s.nextLine());
 		System.out.println("admin password? ");
