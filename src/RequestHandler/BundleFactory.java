@@ -87,13 +87,15 @@ public class BundleFactory {
 		int [] dead_critters;
 		Inhabitant [] state;
 		public worldBundle(int rone, int rtwo, int cone, int ctwo, int oldVersion, PostRequests pr, int sesid, String al) {
-			
+			LogEntry le = pr.log.getDiffBounded(oldVersion, rone, rtwo, cone, ctwo);
+			fillInBundle(le, pr, sesid, al);
 		}
 		public worldBundle(int rone, int rtwo, int cone, int ctwo, PostRequests pr, int sesid, String al) {
 			this(rone, rtwo, cone, ctwo, -1, pr, sesid, al);
 		}
 		public worldBundle(int oldVersion, PostRequests pr, int sesid, String al) {
-			
+			LogEntry le = pr.log.getDiff(oldVersion);
+			fillInBundle(le,pr,sesid,al);
 		}
 		public worldBundle(PostRequests pr, int sesid, String al) {
 			this(-1, pr, sesid, al);

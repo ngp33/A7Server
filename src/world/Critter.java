@@ -52,7 +52,7 @@ public class Critter extends Hex {
 		
 	}
 	
-	public Critter(int [] mem, Random r, ProgramImpl genetics, World wrld) { //TODO Give the new critter a name
+	public Critter(int [] mem, Random r, ProgramImpl genetics, World wrld) {
 		genes = genetics;
 		direction = r.nextInt(6);
 		w = wrld;
@@ -68,7 +68,14 @@ public class Critter extends Hex {
 	 */
 	public void timestep(ArrayList<HexUpdate> updateLogEntry){
 		matingdance = false;
+		int prerow = row;
+		int precol = col;
 		Rulehandler.altercritter(this, updateLogEntry);
+		if (prerow == row && precol == col) {
+			HexUpdate update = new HexUpdate(row, col, this);
+			updateLogEntry.add(update);
+		}
+		
 	}
 	
 	/**This is the heavyweight getNumRep for critters which returns the detailed 
