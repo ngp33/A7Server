@@ -25,6 +25,7 @@ public class RingBuffer<T> implements BlockingQueue<T> {
 	public T remove() {
 		synchronized(this) {
 			T returned = peek();
+			t_array[head] = null;
 			head = head + 1 == t_array.length ? 0 : head + 1;
 			this.notifyAll();
 			return returned;
@@ -58,7 +59,11 @@ public class RingBuffer<T> implements BlockingQueue<T> {
 	@Override
 	public int size() {
 		synchronized (this) {
-			return tail - head < 0 ? (t_array.length - head + 1) + tail : tail - head;
+			int size =  tail - head < 0 ? (t_array.length - head + 1) + tail : tail - head;
+			if (t_array[tail] != null) {
+				size = t_array.length;
+			}
+			return size;
 		}
 	}
 
@@ -79,14 +84,15 @@ public class RingBuffer<T> implements BlockingQueue<T> {
 
 	@Override
 	public Object[] toArray() {
-		synchronized (this) {
-			return toArray(new Object [2]);
-		}
+		/*synchronized (this) {
+			return toArray(new Object [0]);
+		}*/
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		synchronized (this) {
+		/*synchronized (this) {
 			T [] returned = (T[]) new Object[this.size()];
 			if (tail >= head) {
 				for (int p = head; p < tail; p++) {
@@ -101,7 +107,8 @@ public class RingBuffer<T> implements BlockingQueue<T> {
 				}
 			}
 			return returned;
-		}
+		}*/
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -133,20 +140,18 @@ public class RingBuffer<T> implements BlockingQueue<T> {
 	@Override
 	public boolean add(T e) {
 		synchronized (this) {
-			if (!contains(e)) {
-				while (size() == t_array.length) {
-					try {
-						this.wait();
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
-					}
+			while (size() == t_array.length) {
+				try {
+					this.wait();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
 				}
-				t_array[tail] = e;
-				tail = tail + 1 == t_array.length ? 0 : tail + 1;
-				this.notifyAll();
 			}
-			return true;
+			t_array[tail] = e;
+			tail = tail + 1 == t_array.length ? 0 : tail + 1;
+			this.notifyAll();
 		}
+		return true;
 	}
 
 	@Override
@@ -190,9 +195,9 @@ public class RingBuffer<T> implements BlockingQueue<T> {
 	@Override
 	public boolean contains(Object o) {
 		synchronized (this) {
-			Iterator<T> i = iterator();
-			while (i.hasNext()) {
-				if (i.next().equals(o)) {
+			iteratorplace = head;
+			while (hasNext()) {
+				if (next().equals(o)) {
 					return true;
 				}
 			}
@@ -210,21 +215,24 @@ public class RingBuffer<T> implements BlockingQueue<T> {
 		throw new UnsupportedOperationException();
 	}
 
+	/**Equality if the ringbuffers have the same memory capacity and the same fields*/
 	public boolean equals(Object o) {
-		try {
-			RingBuffer<T> other = (RingBuffer<T>) o;
-			if (other.t_array.length == t_array.length) {
-				Iterator<T> i = iterator();
-				while (i.hasNext()) {
-					if (!other.contains(i.next())) {
-						return false;
+		synchronized (this) {
+			try {
+				RingBuffer<T> other = (RingBuffer<T>) o;
+				if (other.t_array.length == t_array.length) {
+					iteratorplace = head;
+					while (hasNext()) {
+						if (!other.contains(next())) {
+							return false;
+						}
 					}
+					return true;
 				}
-				return true;
+				return false;
+			}catch (ClassCastException cce) {
+				return false;
 			}
-			return false;
-		} finally {
-			return false;//Something is wrong here?
 		}
 	}
 	
