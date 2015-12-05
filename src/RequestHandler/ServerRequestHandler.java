@@ -84,7 +84,6 @@ public class ServerRequestHandler extends HttpServlet {
 
 	
 	public void init() throws ServletException {
-		System.out.println("YEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 		gson = new Gson();
 		pi = new ParserImpl();
 		pr = new PostRequests();
@@ -93,8 +92,7 @@ public class ServerRequestHandler extends HttpServlet {
 		Scanner s = new Scanner(System.in);
 		System.out.println("Set up level-password mapping");
 		System.out.println("read password? ");
-		String readPass = s.nextLine();
-		pr.LevelPassword.put("read", readPass);
+		pr.LevelPassword.put("read", s.nextLine());
 		System.out.println("write password? ");
 		pr.LevelPassword.put("write", s.nextLine());
 		System.out.println("admin password? ");
@@ -163,10 +161,7 @@ public class ServerRequestHandler extends HttpServlet {
 			pr.handleLoadNewCritters(gson.fromJson(br, BundleFactory.CritPlacementBundle.class), sessionID, response);
 			break;
 		case "CritterWorld/world":
-			w = new World(); //A little confused on the json for reading from a new world
-			//It looks like we might need to make use of loadworld from console.
-			//pr.handleNewWorld();
-			//FROM THE FILE??? TODO
+			pr.handleLoadNewWorld(br);
 			break;
 		case "CritterWorld/step":
 			sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));

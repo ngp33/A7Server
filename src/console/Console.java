@@ -6,9 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
+import RequestHandler.HexUpdate;
 import ast.Node;
 import ast.Program;
 import ast.ProgramImpl;
@@ -21,7 +23,7 @@ public class Console {
     private Scanner scan;
     public boolean done;
 
-    World world;
+    public World world;
 
     public static void main(String[] args) {
         Console console = new Console();
@@ -44,7 +46,7 @@ public class Console {
         }
         case "load": {
             String filename = scan.next();
-            loadWorld(filename);
+            //loadWorld(filename);
             break;
         }
         case "critters": {
@@ -111,15 +113,8 @@ public class Console {
      * Starts new simulation with world specified in filename.
      * @param filename
      */
-    private void loadWorld(String filename) {
-    	BufferedReader reader;
+    public void loadWorld(BufferedReader reader, ArrayList<HexUpdate> updates) {
     	
-        try {
-			reader = new BufferedReader(new FileReader(filename));
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found!");
-			return;
-		}
         
         try {
 	    	String line = reader.readLine();
@@ -192,7 +187,7 @@ public class Console {
 	        		int c = Integer.parseInt(line.substring(0, div));
 	        		int r = Integer.parseInt(line.substring(div+1));
 	        		
-	        		//world.setHex(r, c, new Rock());
+	        		world.setHex(r, c, new Rock(), updates);
 	        		System.out.println("Rock added at (" + r + ", " + c + ")");
 	        	} else if (line.substring(0, 5).equals("food ")) {
 	        		line = line.substring(5);
@@ -215,7 +210,7 @@ public class Console {
 	        		int r = Integer.parseInt(line2.substring(0, div2));
 	        		int amount = Integer.parseInt(line2.substring(div2+1));
 	        		
-	        		//world.setHex(r, c, new Food(amount));
+	        		world.setHex(r, c, new Food(amount), updates);
 	        		System.out.println("Food added at (" + r + ", " + c + ")");
 	        	} else if (line.substring(0, 8).equals("critter ")) {
 	        		line = line.substring(8);
@@ -235,7 +230,7 @@ public class Console {
 	        		Critter critter = createCritter(segments[0]);
 	        		critter.direction = dir;
 	        		
-	        		//world.setHex(r, c, critter);
+	        		world.setHex(r, c, critter, updates);
 	        		world.addCritter(critter);
 	        		System.out.println("Critter added at (" + r + ", " + c + ")");
 	        	} else {
@@ -355,11 +350,11 @@ public class Console {
 			System.out.println("Invalid critter file.");
 			return;
 		}
-        randomPlacement(world, model, n, rnd); //Changed untested TODO
+        //randomPlacement(world, model, n, rnd); //Changed untested TODO
     }
     
     /**Effect: Takes an original critter (model) and copies it randomly n times*/
-    public static void randomPlacement(World world, Critter model, int n, Random rnd) {
+    public static void randomPlacement(World world, Critter model, int n, Random rnd, ArrayList<HexUpdate> al) {
     	Hex[] emptyHexes = world.getEmptyHexes();
         
         if (emptyHexes.length < n) {
@@ -376,7 +371,7 @@ public class Console {
         
         for (int i = 0; i < n; i++) {
         	Critter toAdd = model.copy();
-        	//world.swap(emptyHexes[i], toAdd);
+        	world.swap(emptyHexes[i], toAdd, al);
         	world.addCritter(toAdd);
         }
     }

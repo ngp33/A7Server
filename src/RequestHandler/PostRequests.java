@@ -1,5 +1,6 @@
 package RequestHandler;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -142,7 +143,9 @@ public class PostRequests {
 			//The above line ensures that all critters have a species.
 			c.godId = sessionID;
 			if (cpb.positions == null) {
-				Console.randomPlacement(w, c, cpb.num, c.r);
+				LogEntry le = new LogEntry();
+				Console.randomPlacement(w, c, cpb.num, c.r, le.updates);
+				log.log.add(le);
 
 			} else {
 				for (Placement p : cpb.positions) {
@@ -259,6 +262,14 @@ public class PostRequests {
 			response.setStatus(401);
 		}
 
+	}
+	
+	public void handleLoadNewWorld (BufferedReader worldfile) {
+		LogEntry logEntry = new LogEntry();
+		
+		Console c = new Console();
+		c.loadWorld(worldfile, logEntry.updates);
+		w = c.world;
 	}
 
 	
