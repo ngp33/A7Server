@@ -62,7 +62,6 @@ public class PostRequests {
 	public void handleLogin(AdminBundles.login info, HttpServletResponse r) {
 		if (info.password.equals(LevelPassword.get(info.level))) {
 			r.addHeader("Content-Type", "application/json");
-			r.setStatus(200);
 			PrintWriter pw;
 			try {
 				pw = r.getWriter();
@@ -86,6 +85,7 @@ public class PostRequests {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			r.setStatus(200);
 		}
 		else {
 			r.setStatus(401);

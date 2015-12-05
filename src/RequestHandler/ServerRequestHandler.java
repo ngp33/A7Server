@@ -109,13 +109,13 @@ public class ServerRequestHandler extends HttpServlet {
 		System.out.println(URIPath);
 		int sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
 		switch (splice(URIPath,2)) {
-		case "CritterWorld/critters": //list all critters
+		case "CritterWorld/critters/": //list all critters
 			gr.handleGetCritterList(sessionID, pr.accessLevel(sessionID), w, response);
 			break;
-		case "CritterWorld/critter": //retrieve a critter
+		case "CritterWorld/critter/": //retrieve a critter
 			gr.handleGetCritter(sessionID, pr.accessLevel(sessionID), w, response, w.getCritterById(Integer.parseInt(reqStringInfo.queryParams.get("id"))));
 			break;
-		case "CritterWorld/world": //Get world or subsection of the world
+		case "CritterWorld/world/": //Get world or subsection of the world
 			if (reqStringInfo.queryParams.containsKey("from_row")) {
 				int rone = Integer.parseInt(reqStringInfo.queryParams.get("from_row"));
 				int rtwo = Integer.parseInt(reqStringInfo.queryParams.get("to_row"));
@@ -154,25 +154,27 @@ public class ServerRequestHandler extends HttpServlet {
 		String URIPath = reqStringInfo.path;
 		BufferedReader br = request.getReader();
 		int sessionID;
+		URIPath = URIPath.substring(1);
+		System.out.println(splice(URIPath, 2));
 		switch (splice(URIPath,2)) {
-		case "CritterWorld/login":
+		case "CritterWorld/login/":
 			pr.handleLogin(gson.fromJson(br, AdminBundles.login.class), response);
 			break;
-		case "CritterWorld/critters":
+		case "CritterWorld/critters/":
 			sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
 			pr.handleLoadNewCritters(gson.fromJson(br, BundleFactory.CritPlacementBundle.class), sessionID, response);
 			break;
-		case "CritterWorld/world":
+		case "CritterWorld/world/":
 			w = new World(); //A little confused on the json for reading from a new world
 			//It looks like we might need to make use of loadworld from console.
 			//pr.handleNewWorld();
 			//FROM THE FILE??? TODO
 			break;
-		case "CritterWorld/step":
+		case "CritterWorld/step/":
 			sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
 			pr.handleStep(gson.fromJson(br, AdminBundles.numSteps.class), sessionID, response);
 			break;
-		case "CritterWorld/run":
+		case "CritterWorld/run/":
 			sessionID = Integer.parseInt(reqStringInfo.queryParams.get("session_id"));
 			pr.handleRun(gson.fromJson(br, AdminBundles.runRate.class), sessionID, response);
 			break;
@@ -429,6 +431,10 @@ public class ServerRequestHandler extends HttpServlet {
 		int itera = 0;
 		while (itera < numelems && itera < strs.length) {
 			sb.append(strs[itera]);
+			//if (itera != numelems) {
+				sb.append('/');
+			//}
+			itera++;
 		}
 		return sb.toString();
 	}
